@@ -1,6 +1,19 @@
 ---
-title: Hello World
+layout: md
+title: Learn Hexo
+date: 2021-9-27 21:56:51
+
+comments: true
+toc: true
+cover:  http://home.ustc.edu.cn/~lay_sn1987a/wallpaper7.jpg
+
+tags:
+  - hexo博客
+  - Markdown
+abbrlink: 15546
+date: 2021-6-21 16:00:00
 ---
+
 Welcome to [Hexo](https://hexo.io/)! This is your very first post. Check [documentation](https://hexo.io/docs/) for more info. If you get any problems when using Hexo, you can find the answer in [troubleshooting](https://hexo.io/docs/troubleshooting.html) or you can ask me on [GitHub](https://github.com/hexojs/hexo/issues).
 
 ## Quick Start
