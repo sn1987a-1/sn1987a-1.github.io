@@ -1,8 +1,8 @@
 ﻿class:
-  class_name: 酷酷の博主
+  class_name: SN1987Aの博主
   link_list:
     1:
-      name: Xianqiの博客         #  博客名
+      name: SN1987Aの博客         #  博客名
       link: http://ze520.cn       # 链接到的博客网址
       avatar: https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/img/avatar.jpg   # 博客头像
       descr: 既然选择了远方,便只顾风雨兼程     #  博客的座右铭
