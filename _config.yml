@@ -5,7 +5,7 @@
 # Site   xxxxxxxxxxxx
 title: SN1987A
 subtitle: 'LAYのBLOG'
-description: 'Lrean not and know not.'
+description: 'Learn not and know not.'
 keywords: 'lay Ustc CS'
 author: SN1987A
 language: zh-CN
@@ -132,7 +132,7 @@ sitemap:
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:
 - type: 'git'
-  repo: https://github.com/sn1987a-1/sn1987a-1.github.io.git #git@47.99.169.96:/home/git/blog.git  git@github.com:wuwuwuuu/wuwuwuuu.github.io.git    # xxxxxxxxx
+  repo: git@github.com:sn1987a-1/sn1987a-1.github.io.git #git@47.99.169.96:/home/git/blog.git  git@github.com:wuwuwuuu/wuwuwuuu.github.io.git    # xxxxxxxxx
   branch: master
 - type: baidu_url_submitter
 
