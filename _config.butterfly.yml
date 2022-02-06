@@ -590,8 +590,8 @@ activate_power_mode:
 
 # Mouse click effects: fireworks (鼠標點擊效果: 煙火特效)
 fireworks:
-  enable: false
-  zIndex: 9999 # -1 or 9999
+  enable: true
+  zIndex: -1 # -1 or 9999
   mobile: false
 
 # Mouse click effects: Heart symbol (鼠標點擊效果: 愛心)
@@ -818,8 +818,8 @@ pjax:
 
 # Inject the css and script (aplayer/meting)
 aplayerInject:
-  enable: true
-  per_page: true
+  enable: false
+  per_page: false
 
 # Snackbar (Toast Notification 彈窗)
 # https://github.com/polonel/SnackBar

@@ -9,11 +9,11 @@ comments: false
 
 Learn not and know not.
 
-- ustc cser 2020.
-- = = 
+- USTC cser 2020.
+- =^= 
 
 
 ## 联系我
 QQ：945093063
-
-邮箱:lay_sn1987a@mali.ustc.edu.cn
+phone:18306552190
+main:lay_sn1987a@mail.ustc.edu.cn

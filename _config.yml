@@ -172,11 +172,11 @@ live2d:
   scriptFrom: local
   model:
     # 这是白猫的模型
-    use: live2d-widget-model-tororo     # xxxxxxxxxxxx
+    use: live2d-widget-model-koharu     # xxxxxxxxxxxx
   display:
     # 设置模型的位置
     position: left
     width: 150
     height: 300
   mobile:
-    show: false   # 手机显示开关，建议关闭
+    show: true   # 手机显示开关，建议关闭
