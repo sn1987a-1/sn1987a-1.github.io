@@ -3,13 +3,13 @@
 title: WSL2美化
 comments: true
 toc: true
-cover: http://home.ustc.edu.cn/~lay_sn1987a/wallpaper6.jpg
 categories:
   - WSL2
 tags:
   - 美化
   - Unix
 abbrlink: 15684
+cover: https://user-images.githubusercontent.com/74918703/152667136-9cbb382e-7756-4664-899e-f8988097d600.png
 date: 2022-1-21 22:12:20
 
 ---
@@ -26,7 +26,7 @@ date: 2022-1-21 22:12:20
 
 下图是我的美化结果。
 
-![image-20220122222259548](C:\Users\李\AppData\Roaming\Typora\typora-user-images\image-20220122222259548.png)
+![image-20220122222259548](https://user-images.githubusercontent.com/74918703/152648068-cc3de98c-40c3-401e-983b-a32860435f16.png)
 
 ## 对Windows terminal的外观进行美化
 
@@ -88,12 +88,12 @@ Windows原装字体不支持很多符号的显示，这里推荐修改默认字�
 
 比较简单的，可以在微软官方[下载]([Windows ターミナル Cascadia Code | Microsoft Docs](https://docs.microsoft.com/ja-jp/windows/terminal/cascadia-code))Cascadia Code PL字体，或者是下载文件后右键单击该字体对应的.otf/.ttf文件并选择安装。
 
-当然有功能更加强大，应用更加广泛的字体Nerd Fond，包含了更多字符库，[点击下载]([ryanoasis/nerd-fonts: Iconic font aggregator, collection, & patcher. 3,600+ icons, 50+ patched fonts: Hack, Source Code Pro, more. Glyph collections: Font Awesome, Material Design Icons, Octicons, & more (github.com)](https://github.com/ryanoasis/nerd-fonts))。
+当然有功能更加强大，应用更加广泛的字体Nerd Fond(Hack Nerd Fond)，包含了更多字符库，[点击下载]([ryanoasis/nerd-fonts: Iconic font aggregator, collection, & patcher. 3,600+ icons, 50+ patched fonts: Hack, Source Code Pro, more. Glyph collections: Font Awesome, Material Design Icons, Octicons, & more (github.com)]( https://github.com/ryanoasis/nerd-fonts ))。
 
 安装完成后，同样在profiles目录的Ubuntu-xx.xx里修改：
 
 ```c
-     "fontFace": "Cascadia Code PL",
+     "fontFace": "Hack Nerd Fond"
      "fontSize": 10,
 ```
 

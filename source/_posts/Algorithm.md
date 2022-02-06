@@ -3,7 +3,6 @@
 title: 线性筛的理解和应用
 comments: true
 toc: true
-cover: http://home.ustc.edu.cn/~lay_sn1987a/wallpaper7.jpg
 categories:
   - 算法
   - practice
