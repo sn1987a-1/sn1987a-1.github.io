@@ -29,12 +29,12 @@ hide_sidebar_menu_child: false
 
 envelope_comment:
   enable: true
-  cover:  https://user-images.githubusercontent.com/74918703/151368533-10b2f266-23c8-4ffd-873d-986a1db23d5f.jpg # 信笺封面图
+  cover:  https://user-images.githubusercontent.com/74918703/152667100-bd355f39-b7fc-4ec0-ad37-fb071e18ab1d.png # 信笺封面图
   message:  # 信笺内容，支持多行
     - 有什么想问的？
     - 有什么想说的？
     - 有什么想吐槽的？
-  bottom: 新一代全自动小天体为您服务！   # 信笺结束语，只能单行
+  bottom: 小天体为您服务！   # 信笺结束语，只能单行
   height:                          # 调整信笺划出高度，默认1050px
   path:                             # 【可选】comments 的路径名称。默认为 comments ， 生成的页面为 comments/index.html
   front_matter:                    # 【可选】comments页面的 front_matter 配置
@@ -101,8 +101,8 @@ local_search:
 
 # MathJax
 mathjax:
-  enable: false
-  per_page: false
+  enable: true
+  per_page: true
 
 # KaTeX
 katex:
@@ -567,13 +567,13 @@ canvas_ribbon:
 
 # Fluttering Ribbon (動態彩帶)
 canvas_fluttering_ribbon:
-  enable: true
+  enable: false
   mobile: false
 
 # canvas_nest
 # https://github.com/hustcc/canvas-nest.js
 canvas_nest:
-  enable: true
+  enable: trues
   color: '0,0,255' #color of lines, default: '0,0,0'; RGB values: (R,G,B).(note: use ',' to separate.)
   opacity: 0.7 # the opacity of line (0~1), default: 0.5.
   zIndex: -1 # z-index property of the background, default: -1.
@@ -660,7 +660,7 @@ subtitle:
   # 如果有英文雙引號' " ',請使用轉義字元 &quot;
   # 開頭不允許轉義字元，如需要，請把整個句子用雙引號包住
   # 如果關閉打字效果，subtitle只會顯示sub的第一行文字
-  sub: "市井长巷 聚拢来的是烟火 摊开来的是人间,月色温柔 而你更甚,这完整的宇宙我只需要欣赏零碎,树有三五七言，我有几朵浪漫"  # xxxxxxxxxxxx
+  sub: "你来人间一趟 你要看看太阳,月色温柔 而你更甚,这完整的宇宙我只需要欣赏零碎,树有三五七言 我有几朵浪漫"  # xxxxxxxxxxxx
 
 # Loading Animation (加載動畫)
 preloader: true
