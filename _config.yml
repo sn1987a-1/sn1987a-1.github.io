@@ -171,7 +171,7 @@ live2d:
   enable: true
   scriptFrom: local
   model:
-    # 这是白猫的模型
+    # 这是模型
     use: live2d-widget-model-koharu     # xxxxxxxxxxxx
   display:
     # 设置模型的位置
