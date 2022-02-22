@@ -8,21 +8,11 @@
       descr: learn not and know not     #  博客的座右铭
       siteshot: https://user-images.githubusercontent.com/74918703/151368509-82496ecd-10b4-4132-ad48-a4cae0ae460e.jpg   #  小卡片的背景图
 class2:
-  class_name: ?
+  class_name: my acushla
   link_list:
     1:
-      name: #小玲の同学の博客
-      link: #https://lovezcr.github.io/
-      avatar: #https://z3.ax1x.com/2021/08/02/fCYKNF.png
+      name:  颍川散人
+      link:  https://aqulia-1h.github.io/
+      avatar:  https://raw.githubusercontent.com/Aquila-1h/blog-img/main/imgs/IMG_5691.61s0k7n90ow0.webp
       descr: #越努力越幸运
-      siteshot: #https://cdn.jsdelivr.net/gh/zhaoze-jpg/xianqi-img@main/img/1.webp
-
-class3:
-  class_name: 佬
-  link_list:
-    1:
-      name: Xianqiの博客
-      link: http://ze520.cn
-      avatar: https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/img/avatar.jpg
-      descr: 既然选择了远方,便只顾风雨兼程
-      siteshot: https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/img/0.jpg
+      siteshot:  https://raw.githubusercontent.com/Aquila-1h/blog-img/main/imgs/image.32infyq3ovc0.webp
