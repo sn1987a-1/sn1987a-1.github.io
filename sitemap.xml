@@ -2,6 +2,34 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://sn1987a-1.github.io/link/index.html</loc>
+    
+    <lastmod>2022-03-01</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://sn1987a-1.github.io/comments/index.html</loc>
+    
+    <lastmod>2022-03-01</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://sn1987a-1.github.io/archives/index.html</loc>
+    
+    <lastmod>2022-03-01</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://sn1987a-1.github.io/about/index.html</loc>
+    
+    <lastmod>2022-03-01</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://sn1987a-1.github.io/posts/15203.html</loc>
     
     <lastmod>2022-03-01</lastmod>
@@ -30,13 +58,6 @@
   </url>
   
   <url>
-    <loc>http://sn1987a-1.github.io/archives/index.html</loc>
-    
-    <lastmod>2022-02-28</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://sn1987a-1.github.io/posts/28913.html</loc>
     
     <lastmod>2022-02-28</lastmod>
@@ -51,21 +72,7 @@
   </url>
   
   <url>
-    <loc>http://sn1987a-1.github.io/about/index.html</loc>
-    
-    <lastmod>2022-02-06</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://sn1987a-1.github.io/posts/12532.html</loc>
-    
-    <lastmod>2022-02-06</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://sn1987a-1.github.io/comments/index.html</loc>
     
     <lastmod>2022-02-06</lastmod>
     
@@ -96,13 +103,6 @@
     <loc>http://sn1987a-1.github.io/posts/1120.html</loc>
     
     <lastmod>2022-01-28</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://sn1987a-1.github.io/link/index.html</loc>
-    
-    <lastmod>2022-01-27</lastmod>
     
   </url>
   
