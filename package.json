@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "gulp-html-minifier-terser": "^6.0.1",
-    "hexo": "^5.0.0",
+    "hexo": "^6.1.0",
     "hexo-abbrlink": "^2.2.1",
     "hexo-baidu-url-submit": "0.0.6",
     "hexo-butterfly-artitalk": "^1.0.3",
