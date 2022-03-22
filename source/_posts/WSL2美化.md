@@ -9,7 +9,7 @@ tags:
   - 美化
   - Unix
 abbrlink: 15684
-cover: https://user-images.githubusercontent.com/74918703/152667136-9cbb382e-7756-4664-899e-f8988097d600.png
+cover: https://user-images.githubusercontent.com/74918703/155833471-10c2dd15-9579-4516-a86b-539be619066d.png
 date: 2022-1-21 22:12:20
 
 ---

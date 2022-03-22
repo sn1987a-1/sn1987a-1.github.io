@@ -16,4 +16,4 @@ Learn not and know not.
 ## 联系我
 QQ：945093063
 phone:18306552190
-main:lay_sn1987a@mail.ustc.edu.cn
+mail:lay_sn1987a@mail.ustc.edu.cn
