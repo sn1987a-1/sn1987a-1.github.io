@@ -114,22 +114,23 @@ katex:
 # --------------------------------------
 
 # Favicon（網站圖標）
-favicon: https://user-images.githubusercontent.com/74918703/151389154-e3170673-431f-4400-8f68-8acf466f0680.png   # xxxxxxxxxxxxx  网站图标
+favicon: https://user-images.githubusercontent.com/74918703/157878087-7f268ec6-e86a-4e5f-be80-4846ee8d644c.png   # xxxxxxxxxxxxx  网站图标
 
 # Avatar (頭像)
 avatar:
-  img : https://user-images.githubusercontent.com/74918703/151389154-e3170673-431f-4400-8f68-8acf466f0680.png    # xxxxxxxxxxxxxxx   头像
+  img: https://user-images.githubusercontent.com/74918703/157878087-7f268ec6-e86a-4e5f-be80-4846ee8d644c.png    # xxxxxxxxxxxxxxx   头像
+
   effect: false
 
 # Disable all banner image
 disable_top_img: false
 
 # The banner image of home page
-index_img: https://user-images.githubusercontent.com/74918703/151368533-10b2f266-23c8-4ffd-873d-986a1db23d5f.jpg
+index_img: https://user-images.githubusercontent.com/74918703/155833527-e9f98659-2f5e-493f-9a58-ae10886c39d6.png
  # xxxxxxxxxxxxxxx   封面
 
 # If the banner of page not setting, it will show t9he top_img
-default_top_img: https://user-images.githubusercontent.com/74918703/151368224-cba0073a-dce6-4e63-91b3-32aa10f1a56b.jpg # xxxxxxxxxxxx 文章未设置封面时，显示的封面
+default_top_img: https://user-images.githubusercontent.com/74918703/155833614-94542aa5-0d30-4691-95d6-9d35a95eaa6a.png # xxxxxxxxxxxx 文章未设置封面时，显示的封面
 
 # The banner image of archive page
 archive_img:
@@ -439,7 +440,7 @@ gitter:
 # crisp
 # https://crisp.chat/en/
 crisp:
-  enable: true
+  enable: false
   website_id: 482d6e0b-ea62-40df-8441-51800cdfab1c
 
 # Footer Settings
@@ -567,13 +568,13 @@ canvas_ribbon:
 
 # Fluttering Ribbon (動態彩帶)
 canvas_fluttering_ribbon:
-  enable: false
+  enable: true
   mobile: false
 
 # canvas_nest
 # https://github.com/hustcc/canvas-nest.js
 canvas_nest:
-  enable: trues
+  enable: false
   color: '0,0,255' #color of lines, default: '0,0,0'; RGB values: (R,G,B).(note: use ',' to separate.)
   opacity: 0.7 # the opacity of line (0~1), default: 0.5.
   zIndex: -1 # z-index property of the background, default: -1.
@@ -590,7 +591,7 @@ activate_power_mode:
 
 # Mouse click effects: fireworks (鼠標點擊效果: 煙火特效)
 fireworks:
-  enable: false
+  enable: true
   zIndex: -1 # -1 or 9999
   mobile: false
 
