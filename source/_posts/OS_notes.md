@@ -386,7 +386,7 @@ Examples:Linux,Windows,Mac OS X structure,IOS,Android...
 
 
 
-### OPerating System Design and Implementation
+### Operating System Design and Implementation
 
 ... is not solvable
 

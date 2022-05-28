@@ -73,6 +73,7 @@ B--scheduler dispatch-->D
 D--exit-->E[terminated]
 ```
 
+
 ### PCB--process structure
 **How to locate /represent a process**
 - PCB:process control block or task control block
@@ -555,7 +556,7 @@ solve:
   - returns to the pool after completion
   - wait until one becomes free if the pools cpntains no available thread
 - advantages
-  - usually sightly faster to service a request witha an exiting thread than create a new thread
+  - usually sightly faster to service a request with an existing thread than create a new thread
   - allow the number of threads in the applications to be bound to the size of the pool
 
 ### OpenMP
@@ -625,7 +626,186 @@ thread-local stroage:TLS
   - mutual exclusion
   - synchronization
 
----
+# Process communication & Synchronization
+
+the processes within a system may be
+
+- independent
+- cooperating
+
+any process that  shares the data is a cooperating process
+
+## interprocess communication ---IPC
+
+two models:
+
+- shared memory
+- message passing
+
+IPC is used for exchanging data between processes
+
+cooperating processes need IPC for exchanging data
+
+
+
+two nodels：
+
+### shared memory
+
+- establish a shared memory region,read/write to share region
+- accesses are treated as routine memory accesses
+- faster
+
+**producer-consumer problem**
+
+a buffer os needed to allow processes to run concurrently
+
+the requirement: 
+
+**a buffer** 
+
+is a shared object,and is a queue 
+
+problem: when producer wants to put  anew item but the buffer is already full
+
+solution: the producer need to suepended ,and the consumer should wake the producer up after it has dequeue an item
+
+problem: when comsumer wants to dequeue an item but it is empty
+
+solution:  the consumer is suspended and the producer should wake the cinsumer up...
+
+**a producer process**  
+
+produces a unit of data ,and writes that a piece of data to the tail of the buffer
+
+**a consumer process**
+
+removes a unit of data from the head of the bounded buffer at one time
+
+
+
+### message passing
+
+need a message queue to exchange
+
+communictating processes may reside on different computer conntected by a network
+
+IPC provide : **send**+**receive **
+
+- exchange message 
+- require kernel intervention
+- easier to implement in a distributed system
+
+if two process wish to communicate,they need:
+
+- establish a communication link between
+- exchange messages via send/receive
+
+issues:
+
+- naming: direct/indirect
+  - direct:
+    -  opreations: send and receive
+    - properties of 
+  - indirect communication
+    - allow a link to be associated with at most two processes
+    - allow one process at  a time to execute a receive opreation
+    - allow the system to select arbitrarily the receiver ,and sender is notified who the receiver is
+    - the mailbox is owned by the process (ownership may be passed)and the OS(neede a method to create ,send/receive.delete)
+- synchronization : synchronous-- blocking/asynchronous-- non- blocking
+  - dofferent combinations :1.when the send and the receive are blocking , we have a rendezvous between the processes; 2. other conbinations need buffering
+
+- buffering
+  - messages reside in a temporary queue , whic can be implemented in three ways:
+    - zero capacity--no message qre queued, sender must wait for the receiver(no buffering)
+    - bounded capacity -- finite length of n mesages,sender must wait if link is full
+    - undounded capacity - infinite length,sender never waits
+
+
+### POSIX shared memory
+
+POSIX shared memory is orgranized using memory-mapped file,associate the region of shared memory with a file.
+
+illustrate wth the producer-consumer problem:
+
+**producer**
+
+-  create a shared memory object
+  - shm_fd=shm_open (name,O_CREAT |O_RDWR,0666);(perminssions )
+- configure object size
+  - ftruncate(shm_fd,SIZE);
+- establish a memory-mapped file containing the object
+  - prtr mmap(0,SIZE,PORT_WRITE),MAP_SHARED,shm_fd,0);(changes to the shared-memory object)
+
+**consumer**
+
+- open the shared-memory obect
+  - shm_fd=shm_open(name,O_RDONLY,0666);
+- memory map the object
+  - ptr=mmap(0,SIZE,PORT_READ,MAP_SHARED,shm_fd,0);
+- remove the shared memory object
+  - shp_unlink(name);
+
+### Sockets
+
+a sockets is defined as an endpointer for communication(over a network)
+
+- a pair of processes employ a pair of sockets
+- a socker is indentified by an IP address and a port number
+- all ports below 1024 are used for standard services
+  - telnet server listens to port 23
+  - FTP server:port 21
+  - HTTP server :port 80
+
+Socket uses a client-server architecture
+
+-  server waits for incoming client request by listening to a specific port
+- accepts a connection from the client socket to complete the connection
+
+all connection must be unique(establishing a new connection on the same host needs another port>1024)
+
+special IP address 127.0.0.1(loopback)refers to itself
+
+### Pipes
+
+Pipe ia **a shared memory**
+
+- using pipes is a way to realize IPC
+- acts as a conduit two processes to communicate
+
+issues :
+
+- communication: unidirectional/bidirectional
+- half/full duplex
+- must the relationship exists between the communicating processes
+- pipes used over a network
+
+two common pipes: ordinary pipes and named pipes
+
+**ordinary pipes**
+
+- no name  in file system
+- only used for related process(parent-child relationship)
+- unidirectional 
+- ceases to exit after communication has finished
+- allow communication in standard producer-consumer style
+  - producer write to one end and the consumer reads from the other end
+
+UNIX pipe
+
+- UNIX treats a pipe as a special file (child inherits it from parent)
+  - create : pipe(int fd[]);fd[0]-read end,fd[1]-write end
+  - create accesses the ordinary read(),write()system calls
+  - fork() duplicates parent's file descriptors,and parents and child use each end of the pipe
+- pipes are anonymous 
+
+**named pipes**
+
+- UNIX treats as typical file:mkfifo(), open(), read (), write(),close()
+- no parent-child relaitionship is necessary(or processes must reside one the same machine)
+- several processes can use the named pipes for communication
+- continue to exist
+- communication is bidiectional(still half-duplex)
 
 [课程主页](staff.ustc.edu.cn/~ykli/os2022)
 

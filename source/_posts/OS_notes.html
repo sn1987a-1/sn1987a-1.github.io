@@ -1,0 +1,665 @@
+---
+abbrlink: '0'
+---
+<!DOCTYPE html><html><head>
+      <title>Knowledge Framework of OS PART I CH1&amp;CH2</title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.18/dist/katex.min.css">
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      <style>
+      /**
+ * prism.js Github theme based on GitHub's theme.
+ * @author Sam Clarke
+ */
+code[class*="language-"],
+pre[class*="language-"] {
+  color: #333;
+  background: none;
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  word-wrap: normal;
+  line-height: 1.4;
+
+  -moz-tab-size: 8;
+  -o-tab-size: 8;
+  tab-size: 8;
+
+  -webkit-hyphens: none;
+  -moz-hyphens: none;
+  -ms-hyphens: none;
+  hyphens: none;
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+  padding: .8em;
+  overflow: auto;
+  /* border: 1px solid #ddd; */
+  border-radius: 3px;
+  /* background: #fff; */
+  background: #f5f5f5;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+  padding: .1em;
+  border-radius: .3em;
+  white-space: normal;
+  background: #f5f5f5;
+}
+
+.token.comment,
+.token.blockquote {
+  color: #969896;
+}
+
+.token.cdata {
+  color: #183691;
+}
+
+.token.doctype,
+.token.punctuation,
+.token.variable,
+.token.macro.property {
+  color: #333;
+}
+
+.token.operator,
+.token.important,
+.token.keyword,
+.token.rule,
+.token.builtin {
+  color: #a71d5d;
+}
+
+.token.string,
+.token.url,
+.token.regex,
+.token.attr-value {
+  color: #183691;
+}
+
+.token.property,
+.token.number,
+.token.boolean,
+.token.entity,
+.token.atrule,
+.token.constant,
+.token.symbol,
+.token.command,
+.token.code {
+  color: #0086b3;
+}
+
+.token.tag,
+.token.selector,
+.token.prolog {
+  color: #63a35c;
+}
+
+.token.function,
+.token.namespace,
+.token.pseudo-element,
+.token.class,
+.token.class-name,
+.token.pseudo-class,
+.token.id,
+.token.url-reference .token.variable,
+.token.attr-name {
+  color: #795da3;
+}
+
+.token.entity {
+  cursor: help;
+}
+
+.token.title,
+.token.title .token.punctuation {
+  font-weight: bold;
+  color: #1d3e81;
+}
+
+.token.list {
+  color: #ed6a43;
+}
+
+.token.inserted {
+  background-color: #eaffea;
+  color: #55a532;
+}
+
+.token.deleted {
+  background-color: #ffecec;
+  color: #bd2c00;
+}
+
+.token.bold {
+  font-weight: bold;
+}
+
+.token.italic {
+  font-style: italic;
+}
+
+
+/* JSON */
+.language-json .token.property {
+  color: #183691;
+}
+
+.language-markup .token.tag .token.punctuation {
+  color: #333;
+}
+
+/* CSS */
+code.language-css,
+.language-css .token.function {
+  color: #0086b3;
+}
+
+/* YAML */
+.language-yaml .token.atrule {
+  color: #63a35c;
+}
+
+code.language-yaml {
+  color: #183691;
+}
+
+/* Ruby */
+.language-ruby .token.function {
+  color: #333;
+}
+
+/* Markdown */
+.language-markdown .token.url {
+  color: #795da3;
+}
+
+/* Makefile */
+.language-makefile .token.symbol {
+  color: #795da3;
+}
+
+.language-makefile .token.variable {
+  color: #183691;
+}
+
+.language-makefile .token.builtin {
+  color: #0086b3;
+}
+
+/* Bash */
+.language-bash .token.keyword {
+  color: #0086b3;
+}
+
+/* highlight */
+pre[data-line] {
+  position: relative;
+  padding: 1em 0 1em 3em;
+}
+pre[data-line] .line-highlight-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: transparent;
+  display: block;
+  width: 100%;
+}
+
+pre[data-line] .line-highlight {
+  position: absolute;
+  left: 0;
+  right: 0;
+  padding: inherit 0;
+  margin-top: 1em;
+  background: hsla(24, 20%, 50%,.08);
+  background: linear-gradient(to right, hsla(24, 20%, 50%,.1) 70%, hsla(24, 20%, 50%,0));
+  pointer-events: none;
+  line-height: inherit;
+  white-space: pre;
+}
+
+pre[data-line] .line-highlight:before, 
+pre[data-line] .line-highlight[data-end]:after {
+  content: attr(data-start);
+  position: absolute;
+  top: .4em;
+  left: .6em;
+  min-width: 1em;
+  padding: 0 .5em;
+  background-color: hsla(24, 20%, 50%,.4);
+  color: hsl(24, 20%, 95%);
+  font: bold 65%/1.5 sans-serif;
+  text-align: center;
+  vertical-align: .3em;
+  border-radius: 999px;
+  text-shadow: none;
+  box-shadow: 0 1px white;
+}
+
+pre[data-line] .line-highlight[data-end]:after {
+  content: attr(data-end);
+  top: auto;
+  bottom: .4em;
+}html body{font-family:"Helvetica Neue",Helvetica,"Segoe UI",Arial,freesans,sans-serif;font-size:16px;line-height:1.6;color:#333;background-color:#fff;overflow:initial;box-sizing:border-box;word-wrap:break-word}html body>:first-child{margin-top:0}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{line-height:1.2;margin-top:1em;margin-bottom:16px;color:#000}html body h1{font-size:2.25em;font-weight:300;padding-bottom:.3em}html body h2{font-size:1.75em;font-weight:400;padding-bottom:.3em}html body h3{font-size:1.5em;font-weight:500}html body h4{font-size:1.25em;font-weight:600}html body h5{font-size:1.1em;font-weight:600}html body h6{font-size:1em;font-weight:600}html body h1,html body h2,html body h3,html body h4,html body h5{font-weight:600}html body h5{font-size:1em}html body h6{color:#5c5c5c}html body strong{color:#000}html body del{color:#5c5c5c}html body a:not([href]){color:inherit;text-decoration:none}html body a{color:#08c;text-decoration:none}html body a:hover{color:#00a3f5;text-decoration:none}html body img{max-width:100%}html body>p{margin-top:0;margin-bottom:16px;word-wrap:break-word}html body>ul,html body>ol{margin-bottom:16px}html body ul,html body ol{padding-left:2em}html body ul.no-list,html body ol.no-list{padding:0;list-style-type:none}html body ul ul,html body ul ol,html body ol ol,html body ol ul{margin-top:0;margin-bottom:0}html body li{margin-bottom:0}html body li.task-list-item{list-style:none}html body li>p{margin-top:0;margin-bottom:0}html body .task-list-item-checkbox{margin:0 .2em .25em -1.8em;vertical-align:middle}html body .task-list-item-checkbox:hover{cursor:pointer}html body blockquote{margin:16px 0;font-size:inherit;padding:0 15px;color:#5c5c5c;background-color:#f0f0f0;border-left:4px solid #d6d6d6}html body blockquote>:first-child{margin-top:0}html body blockquote>:last-child{margin-bottom:0}html body hr{height:4px;margin:32px 0;background-color:#d6d6d6;border:0 none}html body table{margin:10px 0 15px 0;border-collapse:collapse;border-spacing:0;display:block;width:100%;overflow:auto;word-break:normal;word-break:keep-all}html body table th{font-weight:bold;color:#000}html body table td,html body table th{border:1px solid #d6d6d6;padding:6px 13px}html body dl{padding:0}html body dl dt{padding:0;margin-top:16px;font-size:1em;font-style:italic;font-weight:bold}html body dl dd{padding:0 16px;margin-bottom:16px}html body code{font-family:Menlo,Monaco,Consolas,'Courier New',monospace;font-size:.85em !important;color:#000;background-color:#f0f0f0;border-radius:3px;padding:.2em 0}html body code::before,html body code::after{letter-spacing:-0.2em;content:"\00a0"}html body pre>code{padding:0;margin:0;font-size:.85em !important;word-break:normal;white-space:pre;background:transparent;border:0}html body .highlight{margin-bottom:16px}html body .highlight pre,html body pre{padding:1em;overflow:auto;font-size:.85em !important;line-height:1.45;border:#d6d6d6;border-radius:3px}html body .highlight pre{margin-bottom:0;word-break:normal}html body pre code,html body pre tt{display:inline;max-width:initial;padding:0;margin:0;overflow:initial;line-height:inherit;word-wrap:normal;background-color:transparent;border:0}html body pre code:before,html body pre tt:before,html body pre code:after,html body pre tt:after{content:normal}html body p,html body blockquote,html body ul,html body ol,html body dl,html body pre{margin-top:0;margin-bottom:16px}html body kbd{color:#000;border:1px solid #d6d6d6;border-bottom:2px solid #c7c7c7;padding:2px 4px;background-color:#f0f0f0;border-radius:3px}@media print{html body{background-color:#fff}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{color:#000;page-break-after:avoid}html body blockquote{color:#5c5c5c}html body pre{page-break-inside:avoid}html body table{display:table}html body img{display:block;max-width:100%;max-height:100%}html body pre,html body code{word-wrap:break-word;white-space:pre}}.markdown-preview{width:100%;height:100%;box-sizing:border-box}.markdown-preview .pagebreak,.markdown-preview .newpage{page-break-before:always}.markdown-preview pre.line-numbers{position:relative;padding-left:3.8em;counter-reset:linenumber}.markdown-preview pre.line-numbers>code{position:relative}.markdown-preview pre.line-numbers .line-numbers-rows{position:absolute;pointer-events:none;top:1em;font-size:100%;left:0;width:3em;letter-spacing:-1px;border-right:1px solid #999;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.markdown-preview pre.line-numbers .line-numbers-rows>span{pointer-events:none;display:block;counter-increment:linenumber}.markdown-preview pre.line-numbers .line-numbers-rows>span:before{content:counter(linenumber);color:#999;display:block;padding-right:.8em;text-align:right}.markdown-preview .mathjax-exps .MathJax_Display{text-align:center !important}.markdown-preview:not([for="preview"]) .code-chunk .btn-group{display:none}.markdown-preview:not([for="preview"]) .code-chunk .status{display:none}.markdown-preview:not([for="preview"]) .code-chunk .output-div{margin-bottom:16px}.scrollbar-style::-webkit-scrollbar{width:8px}.scrollbar-style::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}.scrollbar-style::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,0.66);border:4px solid rgba(150,150,150,0.66);background-clip:content-box}html body[for="html-export"]:not([data-presentation-mode]){position:relative;width:100%;height:100%;top:0;left:0;margin:0;padding:0;overflow:auto}html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview{position:relative;top:0}@media screen and (min-width:914px){html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview{padding:2em calc(50% - 457px + 2em)}}@media screen and (max-width:914px){html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview{font-size:14px !important;padding:1em}}@media print{html body[for="html-export"]:not([data-presentation-mode]) #sidebar-toc-btn{display:none}}html body[for="html-export"]:not([data-presentation-mode]) #sidebar-toc-btn{position:fixed;bottom:8px;left:8px;font-size:28px;cursor:pointer;color:inherit;z-index:99;width:32px;text-align:center;opacity:.4}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] #sidebar-toc-btn{opacity:1}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc{position:fixed;top:0;left:0;width:300px;height:100%;padding:32px 0 48px 0;font-size:14px;box-shadow:0 0 4px rgba(150,150,150,0.33);box-sizing:border-box;overflow:auto;background-color:inherit}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar{width:8px}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,0.66);border:4px solid rgba(150,150,150,0.66);background-clip:content-box}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc a{text-decoration:none}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc ul{padding:0 1.6em;margin-top:.8em}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc li{margin-bottom:.8em}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc ul{list-style-type:none}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{left:300px;width:calc(100% -  300px);padding:2em calc(50% - 457px -  150px);margin:0;box-sizing:border-box}@media screen and (max-width:1274px){html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{width:100%}}html body[for="html-export"]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .markdown-preview{left:50%;transform:translateX(-50%)}html body[for="html-export"]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .md-sidebar-toc{display:none}
+/* Please visit the URL below for more information: */
+/*   https://shd101wyy.github.io/markdown-preview-enhanced/#/customize-css */
+
+      </style>
+    </head>
+    <body for="html-export">
+      <div class="mume markdown-preview  ">
+      <h1 class="mume-header" id="knowledge-framework-of-os-part-i-ch1ch2">Knowledge Framework of OS :PART I CH1&amp;CH2</h1>
+
+<p>textbook: Operating System Concepts 10th Edition <a href="https://www.os-book.com/OS10/index.html">check</a></p>
+<p>course home : <a href="http://staff.ustc.edu.cn/~ykli/os2022">http://staff.ustc.edu.cn/~ykli/os2022</a></p>
+<h2 class="mume-header" id="ch1-overview-of-an-operating-system">ch1 Overview of an Operating System</h2>
+
+<h3 class="mume-header" id="system-organization">system organization</h3>
+
+<p>computer-system organization</p>
+<ul>
+<li>One or more CPUs, device controllers connect through common bus providing access to shared memory</li>
+<li>Concurrent execution of CPUs and devices competing for memory cycles</li>
+<li><strong>I/O devices and the CPU</strong> can execute <strong>concurrently</strong></li>
+<li>Each device controller is in charge of a particular device type</li>
+<li>Each device controller has a local buffer</li>
+<li>CPU moves data from/to main memory to/from local buffers</li>
+<li>Device controller informs CPU that it has finished its operation by causing an <strong>interrupt</strong></li>
+</ul>
+<p>computer start-up</p>
+<ol>
+<li><strong>bootstrap program</strong> (&#x542F;&#x52A8;&#x7A0B;&#x5E8F;)is loaded at power-up or reboot (firmware)</li>
+<li>System processes or system daemons</li>
+<li>After fully booted, waits for events to occur &#x2013; Signaled by interrupt</li>
+</ol>
+<p><strong>interrupt handling</strong>  :can be triggered by hardware and software:</p>
+<ol>
+<li>Hardware sends signal to CPU</li>
+<li>Software executes a special operation:<strong>system call</strong></li>
+<li>procedure :CPU stop-&gt;executes the service routine-&gt;CPU resumes</li>
+<li>operating system is interrupt driven</li>
+<li>interrupt architecture must save the address of the interrupted instruction</li>
+<li>interrupt timeline:</li>
+</ol>
+<img src="https://user-images.githubusercontent.com/74918703/155979009-4974c76f-6119-408f-a6e8-86ceb7b4b9d5.png" alt="image" style="zoom:80%;">
+<p>Interrupt transfers control to the interrupt service routine . A table of pointers to interrupt routines, the <strong>interrupt vector</strong>,can be used to provide necessary speed .The table of pointers is stored in low memory.</p>
+<h3 class="mume-header" id="storage-structure">Storage Structure</h3>
+
+<img src="https://user-images.githubusercontent.com/74918703/155979598-8e6b2eb2-38a1-4280-b98c-bfbb41561456.png" alt="image" style="zoom: 80%;">
+<ul>
+<li>Main memory :random access,typically small size and volatile(&#x6613;&#x5931;&#x6027;)</li>
+<li>Instruction-execution cycle 1.Fetch an instruction from memory and store in register &#x2013; Decode instruction (fetch operands if necessary) 2. Store result back to memory</li>
+<li>Secondary storage &#x2013; extension of main memory that provides large nonvolatile storage capacity (like heard disks ,solid-state disks--faster and nonvolatile)</li>
+<li>caching--small ,important principle,in hardware ,opearting system,software.</li>
+<li>I/O structure:interrupt driven</li>
+<li>Direct Memory Access Structure:Device controller transfers blocks of data from buffer storage directly to main memory without CPU intervention,one interrupt per block</li>
+</ul>
+<h3 class="mume-header" id="system-architecture%E5%A4%84%E7%90%86%E5%99%A8">System Architecture(&#x5904;&#x7406;&#x5668;)</h3>
+
+<p>CPU--most use a single general-purpose processor</p>
+<p><strong>Multiprocessors system</strong>:parallel systems,multicore systems,</p>
+<p>advances:Increased throughput;Economy of scale;Increased reliability</p>
+<p>two types:</p>
+<p><strong>SMP</strong>:symmetric multiprocessing,all processors are peers</p>
+<img src="https://user-images.githubusercontent.com/74918703/155982308-fe37e15e-cef6-4597-9f3d-8591f500f1b8.png" alt="image" style="zoom:67%;">
+<p><strong>AM</strong>:asymmetric multiprocessing,boss-worker relationship</p>
+<p>Multicore:: include multiple cores on a single chip .More efficient and less power</p>
+<img src="https://user-images.githubusercontent.com/74918703/155982347-15bd8cd7-500d-483f-95c5-3d0ef6cfc6d1.png" alt="image" style="zoom:67%;">
+<p>distinguish:multicore &amp;SMP,multicore is more efficient but costs more.</p>
+<p><strong>Clustered Systems</strong>:multiple systems working together</p>
+<p>&#x200B;		-<strong>SAN</strong>:storage-area network</p>
+<p>&#x200B;		-some are <strong>HPC</strong>:high-performance computing</p>
+<p>&#x200B;		-<strong>DLM</strong>:distributed lock manager,to avoid conflicting</p>
+<p>So...</p>
+<p>Where is the OS?</p>
+<blockquote>
+<p>Four components of a computer system</p>
+<p>&#x2013; Hardware &#x2013; provides basic computing resources (CPU, memory, I/O devices)</p>
+<p>&#x2013; Users: People, machines, other computers</p>
+<p>&#x2013; App. programs &#x2013; define the ways in which the sys. resources are used to solve the computing problems</p>
+<p>&#x200B;			 &#x2022; Word processors, compilers, web browsers, database systems, video games, etc.</p>
+<p>&#x2013; Operating system</p>
+<p>&#x200B;			&#x2022; Controls and coordinates use of hardware among various applications and users</p>
+</blockquote>
+<p>What is the OS?</p>
+<blockquote>
+<p>&#x2022;It stands between the hardware and the user.</p>
+<p>&#x2013; A program that acts as an intermediary between a user of a computer and the computer hardware</p>
+<p>&#x2022; Operating system goals:</p>
+<p>&#x2013; Execute user programs &amp; make solving user problems easier</p>
+<p>&#x2013; Make the computer system convenient to use</p>
+<p>&#x2013; Use the computer hardware in an efficient manner</p>
+<p>&#x2013; Design tradeoff between convenient and efficiency</p>
+<p>&#x2022; How good is this design?</p>
+<p>&#x2013; The user does not have to program the hardware directly</p>
+<p>&#x2022; Processes as the starting point!</p>
+<p>&#x2013; Whatever programs you run, you create processes.</p>
+<p>&#x200B;		&#x2022; i.e., you need processes to open files, utilize system memory, listen to music, etc.</p>
+<p>&#x2013; So, process lifecycle, process management, and other related issues are essential topics of this course</p>
+</blockquote>
+<p>What Operating Systems Do?</p>
+<ul>
+<li>system view
+<ul>
+<li>control program</li>
+<li>resource alocator</li>
+</ul>
+</li>
+<li>User view
+<ul>
+<li>wanr convenience in use and performance</li>
+<li>usability ,battery life, resource utilization,tradeoff...</li>
+</ul>
+</li>
+</ul>
+<p>well..OS has no universalyy accepted defination</p>
+<h3 class="mume-header" id="operating-systems-operations">Operating Systems Operations</h3>
+
+<h4 class="mume-header" id="os-operations">OS Operations</h4>
+
+<p>control programs/resource allocator</p>
+<ol>
+<li><strong>Mutliprogramming</strong>:needed for efficiency,job run via job scheduling
+<ol>
+<li>Time sharing,&#x5206;&#x65F6;&#x64CD;&#x4F5C;&#x7CFB;&#x7EDF;,logical extension in which CPU switches jobs so frequently that users can interact with each job while it is running, creating interactive computing</li>
+<li>allow many user to share the computer</li>
+<li>issues:&#x2013; If several jobs ready to run at the same time:<strong>CPU scheduling</strong> . If processes don&#x2019;t fit in memory, <strong>swapping</strong> moves them in and out to run . <strong>Virtual memory</strong> allows execution of processes not completely in memory</li>
+</ol>
+</li>
+<li><strong>Interrupt Driven Mechanism</strong>
+<ol>
+<li>(in  Multiprogramming)software and hardware</li>
+<li>Hardware interrupt by one of the devices</li>
+<li>software :(exception or trap),needed to request for opaerating system service</li>
+</ol>
+</li>
+<li><strong>Dual-mode Operation</strong>&#x591A;&#x6A21;&#x5F0F;&#x64CD;&#x4F5C;
+<ol>
+<li>user mode or kernel mode,and transistion between them</li>
+</ol>
+</li>
+</ol>
+<h4 class="mume-header" id="system-call">system call</h4>
+
+<p>system call is similar to a function call ,but it is inside the OS,named OS kernel</p>
+<ul>
+<li>
+<p>System calls are the <strong>programming interface</strong> between processes and the OS kernel</p>
+<ul>
+<li>System calls provide the means for a user program to ask the operating system to perform tasks</li>
+</ul>
+</li>
+<li>
+<p>A system call usually takes the form of a trap to a specific location in the interrupt vector, <strong>treated by the hardware as a software interrupt</strong></p>
+</li>
+<li>
+<p>The system call service routine is a part of the OS</p>
+</li>
+<li>
+<p>usually primitive,important,fundamental(like time()system call)</p>
+</li>
+<li>
+<p>Roughly speaking, we can categorize system calls as follows:</p>
+<table>
+<thead>
+<tr>
+<th>Process</th>
+<th>FileSystem</th>
+<th>Memory</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Security</td>
+<td>Device</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p>distinguish between system call and library function call(library file:in windows :DLL dynameically linked library ,in Linux SO,shared objects)</p>
+</li>
+</ul>
+<p>OS standards:</p>
+<img src="https://user-images.githubusercontent.com/74918703/155991891-c2f45cd5-3191-424d-bd2a-f45d71deec7d.png" alt="image" style="zoom:67%;">
+<h3 class="mume-header" id="process">Process</h3>
+
+<h4 class="mume-header" id="process-vs-program">Process vs Program</h4>
+
+<p>A process is an execution instance of a program,a process is not bounded to execute just one program.A process is active and has its own local states</p>
+<p>command about processes like ps--report a vast amount of information about every process in system(try ps -ef)</p>
+<p>shell---a process launching pad</p>
+<img src="https://user-images.githubusercontent.com/74918703/155994339-75d5f4d4-7244-40c0-93a4-a7238a658cee.png" alt="image" style="zoom:67%;">
+<p>System has many processes, some user, some operating system running concurrently</p>
+<h4 class="mume-header" id="memory">Memory</h4>
+
+<img src="https://user-images.githubusercontent.com/74918703/155995958-b6202a2b-d093-4966-b04f-ec3f022fe50e.png" style="zoom:67%;">
+<p>Java don&apos;t have the above layout,and C is too low</p>
+<h4 class="mume-header" id="storage-management">Storage Management</h4>
+
+<p><strong>File System,FS</strong></p>
+<p>like FAT16, FAT32, NTFS, Ext3, Ext4, BtrFS</p>
+<p>a FS must record :directories,files,allocated,space,free space</p>
+<p>Two face of a file system:1.storage design of the file system.(how it stored)2.the opreations of the file systems</p>
+<p>operations:creating can be replaced by opening;copying can be replaced by read and write;moving can be replaced by rename(in one disks),so the necessary operations are open,read,write,close,rename,delete,..</p>
+<p>A FS is independent of an OS,an OS can use many FS</p>
+<h4 class="mume-header" id="kernal-data-structures">Kernal Data Structures</h4>
+
+<p>Lists,Trees,Hash Map and Bitmaps</p>
+<h3 class="mume-header" id="misc">MISC</h3>
+
+<p><strong>Protection and Security</strong></p>
+<p>this course will discuss the security of File System</p>
+<p>**Computing Environments **</p>
+<ul>
+<li>
+<p>trandition to mobile:IOS ,Android</p>
+</li>
+<li>
+<p>Distributed computing ,like networkTCP/IP</p>
+</li>
+<li>
+<p>Client-Server(C-S computing)</p>
+</li>
+<li>
+<p>Peer-to-Peer computing--&#x53BB;&#x4E2D;&#x5FC3;&#x5316;</p>
+</li>
+<li>
+<p>Virtualization</p>
+</li>
+<li>
+<p>Cloud Computing (&#x8F83;&#x6210;&#x719F;)</p>
+</li>
+<li>
+<p>Real-Time Embedded Systems</p>
+</li>
+</ul>
+<p><strong>Open-sourced OS</strong></p>
+<p>Open-Source Operating Systems---GNU LINUX,BSD UNIX(including mac OS)</p>
+<h3 class="mume-header" id="summary">summary</h3>
+
+<ul>
+<li>OS Overview</li>
+<li>OS Concept</li>
+<li>Multiprogramming &amp; Multitasking</li>
+<li>Dual Mode &amp; System Call</li>
+<li>OS Components</li>
+<li>Process Management</li>
+<li>Memory Management</li>
+<li>Storage Management</li>
+<li>Computer System Organization &amp; Architecture</li>
+<li>Interrupt</li>
+</ul>
+<h2 class="mume-header" id="ch2-operating-system-structures">ch2 Operating System Structures</h2>
+
+<h3 class="mume-header" id="operating-system-services">Operating System Services</h3>
+
+<img src="https://user-images.githubusercontent.com/74918703/156001574-10982645-91ca-4540-9d1f-de15ab2b1a22.png" alt="image" style="zoom:67%;">
+<p>common classes :Convenience of the user and Efficiency of the system</p>
+<p><strong>Operating systems provide an environment for execution of programs and services to programs and users</strong></p>
+<h4 class="mume-header" id="user-operating-system-interface">User Operating System Interface</h4>
+
+<p>execution:1.Load a program into memory 2.run the program3.end execution(normally or abnormally)</p>
+<p>for Helping Users</p>
+<ul>
+<li>I/O operations</li>
+<li>File-system manipulation</li>
+<li>communications</li>
+<li>implementations:(<strong>shared memory and Message passing</strong>)</li>
+<li>error detection,error types error handling<br>
+for Ensuring Efficiency</li>
+</ul>
+<p>for ensuring efficiency</p>
+<ul>
+<li>resource allocation</li>
+<li>accounting--to keep track of</li>
+<li>usage (usage statistics)</li>
+<li>the protection and security</li>
+</ul>
+<p>for Helping Users</p>
+<ul>
+<li>user interface(UI)
+<ul>
+<li>form: CLI(command line),Batch,GUI(Graphics User Interface)</li>
+<li>CLI:shells,two ways of implementing commands:</li>
+<li>1.The command interpreter itself contains the code &#x2022; Jump to a section of its code &amp; make appropriate system call &#x2022; Number of commands determines the size of CLI</li>
+<li>2.Implements commands through system program (UNIX) &#x2022; CLI does not understand the command &#x2022; Use the command to identify a file to be loaded into memory and executed &#x2022; Exp: rm file.txt (search for file rm, load into memory and exe w/ file.txt) &#x2022; Add new commands easily</li>
+</ul>
+</li>
+</ul>
+<p>touchsreen interface...virtual keyboard?voice command</p>
+<h4 class="mume-header" id="system-calls">System Calls</h4>
+
+<p><strong>Programming interface</strong> to the service provided by the OS</p>
+<p>Each OS ha its own Program Call</p>
+<p>System Call &amp;&amp; function</p>
+<p>Why us API?</p>
+<p>for System Call,a simple program like copy may make heavy use of OS,and not user friendly</p>
+<p>Mostly accessed by programs via a high-level API rather than direct system call use,and is easy of use(Simple programs may make heavy use of the OS)Program portability(Compile and run on any system that supports the same API )</p>
+<p>remember the logic relationship between API and Program calls</p>
+<p>API:application programming interface</p>
+<p>common APIs:Win32 API for Windows,POSIX API,JAVA API(JAM,java virtual machine)</p>
+<p>How to use API?</p>
+<p>1.via a library of code provided by OS<br>
+2.Libc:UNIX/Linux with a C language</p>
+<p>API-System Call-OS relationship</p>
+<p><strong>Type of System Call</strong></p>
+<ul>
+<li>Process COntrol
+<ul>
+<li>example: MS_DOS</li>
+</ul>
+</li>
+<li>File Manipulation</li>
+<li>Device Manipulation</li>
+<li>Information Maintenance</li>
+<li>Communications</li>
+<li>Protection</li>
+</ul>
+<h3 class="mume-header" id="operating-system-structure">Operating System Structure</h3>
+
+<p>&#x638C;&#x63E1;&#x4F18;&#x52BF;&#x548C;&#x95EE;&#x9898;&#xFF0C;&#x4E0D;&#x9700;&#x8981;&#x8BB0;&#x4F4F;&#x4F8B;&#x5B50;</p>
+<ul>
+<li>simple structure :MS_DOS</li>
+<li>Monolothic Structure :UNIX</li>
+</ul>
+<p>limited structing beyond simple but not fully layered</p>
+<ul>
+<li>Layered Approach</li>
+</ul>
+<p>not efficient</p>
+<ul>
+<li>Microkernel System Structure</li>
+<li>Modules</li>
+<li>Hybrid System:combine different systems structure</li>
+</ul>
+<p>Examples:Linux,Windows,Mac OS X structure,IOS,Android...</p>
+<h3 class="mume-header" id="operating-system-design-and-implementation">OPerating System Design and Implementation</h3>
+
+<p>... is not solvable</p>
+<ol>
+<li>first problem :design goals and specifications</li>
+<li>improtant principle to separate(<strong>Mechanism</strong> for how to do  and <strong>policy</strong> for what will be done&#xFF09;<br>
+Examples (<strong>Timer Mechanism</strong> for CPU protection and <strong>Priority Mechanism</strong> in job scheduling)</li>
+</ol>
+<p>benefits:maximum flexbility</p>
+<p>OS implementation</p>
+<ul>
+<li>much variation,earily in ass,now in C/C++</li>
+<li>Acutually use a mix of language(body in C,lower levels in ass,system programs in C/C++,scripting language)</li>
+<li>pros and cons</li>
+</ul>
+<h3 class="mume-header" id="miscdebugginggeneration-system-boot">MISC:Debugging,Generation &amp;System Boot</h3>
+
+<p><strong>debugging</strong> like GDB</p>
+<ul>
+<li>failure analysis:log files,core dump,crash dump</li>
+<li>performance tuning: trace list of the system behavior &amp; interactive tools(top displays the resources of usage processes)</li>
+<li>Kernighan&apos;s LAW:&quot;Debug is twice as hard as writing the code in the first place.Therefore,if you write the code as cleverly as possible,you are ,by defination,not smart to debug it.&quot;</li>
+</ul>
+<p><strong>Operation system Generation</strong>---OS is designed to run on any of a class of machines</p>
+<p>the system must be configured or generate for each specific computer site</p>
+<p><strong>SYSGEN</strong> program:it obtains the information concerning the specfic configuration of the hardware system</p>
+<p><strong>system boot</strong></p>
+<ul>
+<li>system booting on most computer systems</li>
+<li>common bootstrap loader allows selection of kernel from multipule disks,versions,kernel options</li>
+</ul>
+<p>Summary of part I :ch1&amp;ch2</p>
+<ul>
+<li>
+<p>operating system overview ----<strong>multiprogramming &amp; multitasking</strong></p>
+</li>
+<li>
+<p>OS operations:<strong>system call &amp; dual mode</strong></p>
+</li>
+<li>
+<p>OS components</p>
+</li>
+<li>
+<p>computing environment</p>
+</li>
+<li>
+<p>OS structure</p>
+</li>
+<li>
+<p>process managements</p>
+</li>
+<li>
+<p>memory managements</p>
+</li>
+<li>
+<p>storage managements</p>
+</li>
+</ul>
+
+      </div>
+      
+      
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    </body></html>
