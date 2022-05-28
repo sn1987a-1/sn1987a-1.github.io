@@ -18,7 +18,7 @@
     "hexo-baidu-url-submit": "0.0.6",
     "hexo-butterfly-artitalk": "^1.0.3",
     "hexo-butterfly-envelope": "^1.0.7",
-    "hexo-deployer-git": "^2.1.0",
+    "hexo-deployer-git": "^3.0.0",
     "hexo-filter-github-emojis": "^3.0.4",
     "hexo-filter-mermaid-diagrams": "^1.0.5",
     "hexo-generator-archive": "^1.0.0",
