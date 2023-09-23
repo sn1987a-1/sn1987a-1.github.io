@@ -1,0 +1,521 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>并行数据结构-p-tree | SN1987A</title><meta name="keywords" content="并行数据结构"><meta name="author" content="SN1987A"><meta name="copyright" content="SN1987A"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="并行数据结构并行数据结构的几个概念  non-blocking 一个线程被挂起或中断不会导致其他线程执行被block  lock-free 保证整个系统的执行进度是不断推进的  wait-free 保证每个线程的执行进度是不断推进的   通常需要做到lock-free,不要求wait-free(较难实现，性能较差) lock-free: auto expected &#x3D; x.load(); do {">
+<meta property="og:type" content="article">
+<meta property="og:title" content="并行数据结构-p-tree">
+<meta property="og:url" content="http://sn1987a-1.github.io/posts/a4d33f77.html">
+<meta property="og:site_name" content="SN1987A">
+<meta property="og:description" content="并行数据结构并行数据结构的几个概念  non-blocking 一个线程被挂起或中断不会导致其他线程执行被block  lock-free 保证整个系统的执行进度是不断推进的  wait-free 保证每个线程的执行进度是不断推进的   通常需要做到lock-free,不要求wait-free(较难实现，性能较差) lock-free: auto expected &#x3D; x.load(); do {">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://user-images.githubusercontent.com/74918703/155833584-1eba0e4e-2d29-48a6-a5a2-c04cc982b0ec.png">
+<meta property="article:published_time" content="2023-09-22T07:46:11.000Z">
+<meta property="article:modified_time" content="2023-09-23T13:03:23.743Z">
+<meta property="article:author" content="SN1987A">
+<meta property="article:tag" content="并行数据结构">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://user-images.githubusercontent.com/74918703/155833584-1eba0e4e-2d29-48a6-a5a2-c04cc982b0ec.png"><link rel="shortcut icon" href="https://user-images.githubusercontent.com/74918703/157878087-7f268ec6-e86a-4e5f-be80-4846ee8d644c.png"><link rel="canonical" href="http://sn1987a-1.github.io/posts/a4d33f77"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  noticeOutdate: {"limitDay":365,"position":"top","messagePrev":"一年之内的产物","messageNext":"技术可能存在过期"},
+  highlight: {"plugin":"prismjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":200},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":50,"languages":{"author":"作者: SN1987A","link":"链接: ","source":"来源: SN1987A","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    jQuery: 'https://cdn.bootcss.com/jquery/3.1.1/jquery.min.js',
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+    },
+    fancybox: {
+      js: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css'
+    }
+  },
+  isPhotoFigcaption: true,
+  islazyload: true,
+  isanchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '并行数据结构-p-tree',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-09-23 21:03:23'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if (GLOBAL_CONFIG_SITE.isHome && /iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    document.addEventListener('pjax:complete', detectApple)})(window)</script><link defer rel="stylesheet" href="/css/customm.css" ><link defer rel="stylesheet" href="https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/css/icon.css"><link defer rel="stylesheet" href="https://cdn.jsdelivr.net/gh/HCLonely/images@master/others/heartbeat.min.css"><link defer rel="stylesheet" href="https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/css/background.css"><meta name="generator" content="Hexo 5.2.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+<link rel="alternate" href="/atom.xml" title="SN1987A" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src= "data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs=" data-lazy-src="https://user-images.githubusercontent.com/74918703/157878087-7f268ec6-e86a-4e5f-be80-4846ee8d644c.png" onerror="onerror=null;src='https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/img/friend_404.gif'" alt="avatar"/></div><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">文章</div><div class="length-num">16</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">标签</div><div class="length-num">17</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fas fa-archive"></i><span> 归档</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/artitalk/"><i class="fa-fw fas fa-book"></i><span> 说说</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> 时轴</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fas fa-heartbeat"></i><span> 清单</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/List/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/List/gallery/"><i class="fa-fw fa fa-image"></i><span> 相册</span></a></li><li><a class="site-page child" href="/List/movies/"><i class="fa-fw fa fa-film"></i><span> 视频</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/tools/"><i class="fa-fw fa fa-suitcase"></i><span> 百宝箱</span></a></div><div class="menus_item"><a class="site-page" href="/Windows/"><i class="fa-fw fa fa-desktop"></i><span> Windows</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> 关于我</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://user-images.githubusercontent.com/74918703/155833584-1eba0e4e-2d29-48a6-a5a2-c04cc982b0ec.png')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">SN1987A</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fas fa-archive"></i><span> 归档</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/artitalk/"><i class="fa-fw fas fa-book"></i><span> 说说</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> 时轴</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fas fa-heartbeat"></i><span> 清单</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/List/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/List/gallery/"><i class="fa-fw fa fa-image"></i><span> 相册</span></a></li><li><a class="site-page child" href="/List/movies/"><i class="fa-fw fa fa-film"></i><span> 视频</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/tools/"><i class="fa-fw fa fa-suitcase"></i><span> 百宝箱</span></a></div><div class="menus_item"><a class="site-page" href="/Windows/"><i class="fa-fw fa fa-desktop"></i><span> Windows</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> 关于我</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">并行数据结构-p-tree</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2023-09-22T07:46:11.000Z" title="发表于 2023-09-22 15:46:11">2023-09-22</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-09-23T13:03:23.743Z" title="更新于 2023-09-23 21:03:23">2023-09-23</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/HPC/">HPC</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">1.8k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>6分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="并行数据结构-p-tree"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="并行数据结构"><a href="#并行数据结构" class="headerlink" title="并行数据结构"></a>并行数据结构</h2><p>并行数据结构的几个概念</p>
+<ul>
+<li><p>non-blocking</p>
+<p>一个线程被挂起或中断不会导致其他线程执行被block</p>
+</li>
+<li><p>lock-free</p>
+<p>保证整个系统的执行进度是不断推进的</p>
+</li>
+<li><p>wait-free</p>
+<p>保证每个线程的执行进度是不断推进的</p>
+</li>
+</ul>
+<p>通常需要做到lock-free,不要求wait-free(较难实现，性能较差)</p>
+<p>lock-free:</p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">auto expected = x.load();
+do {
+     bool ok = x.compare_exchange_strong(expected, new_value);
+} while(!ok)
+//compare_exchange_strong 解释。
+// if true, 则x和expected相等，使用new_value替换x的值
+//if false, 则x和expected不相等，并expected会被修改成x的值<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>（否则需要spin lock）</p>
+<p>仅仅使用串行数据结构+锁远远不能达到要求（还可能导致死锁）</p>
+<p><strong>涉及的数据结构</strong></p>
+<p>CSDS（并行查找数据结构）</p>
+<ul>
+<li>链表，跳表，哈希表</li>
+<li>主要实现：查找，插入，删除<ul>
+<li>查找：遍历</li>
+<li>插入删除，先找到位置，再进行操作</li>
+</ul>
+</li>
+<li>关键<ul>
+<li>速度快，避免耗时操作（写操作），等待和重试</li>
+<li>细粒度，修改尽量设计较小的范围，需要用锁：细粒度锁</li>
+</ul>
+</li>
+</ul>
+<p>非查找数据结构：</p>
+<ul>
+<li>队列，栈，竞争点都在头/尾，队尾竞争激烈</li>
+</ul>
+<h3 id="并行数据结构设计"><a href="#并行数据结构设计" class="headerlink" title="并行数据结构设计"></a>并行数据结构设计</h3><h4 id="单链表"><a href="#单链表" class="headerlink" title="单链表"></a>单链表</h4><p>串行数据结构的单链表的增删改查都相对容易，在并发中容易遇到的问题：</p>
+<ul>
+<li>删除和插入，插入和插入，删除和删除，都会引发问题</li>
+<li>内存管理问题：对已删除的节点，需要释放内存，但如果其他线程持有在该点的操作，不能立即释放</li>
+<li>ABA问题：插入某节点时，该节点的前驱刚被释放且空间被分配到另一个节点（内存复用），导致链表乱序</li>
+<li>线性化问题：遍历链表得到的遍历结果不一定是历史存在过的链表版本数据（解决方案：不提供遍历操作即可，只提供插入删除和查找，这三个操作可以是线性化的）</li>
+</ul>
+<p>解决方案（大部分的问题都是删除操作、释放空间产生的）</p>
+<ul>
+<li>节点不删除，先标记再集中GC，GC加锁<ul>
+<li>s删除导致的GC会出现短暂阻塞，出现长尾</li>
+</ul>
+</li>
+<li>节点删除但不释放内存<ul>
+<li>内存会不断增长</li>
+</ul>
+</li>
+<li>节点删除并释放内存<ul>
+<li>使用引用计数的方式管理链表内存释放，每次遍历对节点进行引用计数（对性能影响较大）</li>
+</ul>
+</li>
+</ul>
+<p>插入删除冲突的解决</p>
+<p>关键在于：被删除节点的next不能被改变，可以将被删除节点的next添加标记符1（next&amp;1），阻止其他线程改变该节点的值。</p>
+<p><img src= "data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs=" data-lazy-src="https://segmentfault.com/img/bVcXvpQ" alt="image.png" style="zoom:33%;"></p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">bool del_node(ListNode* pre_del_node) {
+        ListNode* del_node = pre_del_node-&gt;next.load();
+        //1. 标记del_node-&gt;next;
+        ListNode* excepted_next = del_node-&gt;next.load();
+        //2. next指针添加标记位
+        if (!del_node-&gt;next-&gt;compare_exchange_strong(excepted_next, excepted_next&amp;1)) {
+            return false;
+        }
+        //3. 修改前驱节点next指针
+        if(!pre_del_node-&gt;next.compare_exchange_strong(del_node, del_node-&gt;next)) {
+            return false;
+        }       
+        return true;
+} <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>如果修改不成功将退出，插入也类似。</p>
+<p><code>compare_exchange_strong</code></p>
+<p><strong>ABA问题的解决</strong></p>
+<p>使用tagged pointer解决（在指针上带上版本号进行管理）</p>
+<p>使用指针的最高16尾存储指针的版本信息，每次指针内容发生变化时改变版本号（指针一般64位，CPU内存远远不及）<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/1_57_0/boost/lockfree/detail/tagged_ptr.hpp">参考</a></p>
+<p><strong>内存管理问题解决</strong></p>
+<p>风险指针Hazard Pointers</p>
+<p>原理：</p>
+<ul>
+<li>每个线程把自己访问的节点的地址放在全局可见的地方，这样的全局可见的指针被称为风险指针，访问完节点后清除自己的风险指针</li>
+<li>每个线程维护一个freelist：<ul>
+<li>当某个结点A被删除后，放到freelist里</li>
+<li>检查其他线程的风险指针，看看有没有和A相同的地址，如果没有其他节点正在访问A，A可以被释放</li>
+</ul>
+</li>
+</ul>
+<p>优化：风险指针自身也要保证线程安全，需要高效实现——<code>shared_ptr</code></p>
+<p>使用shared-ptr组织链表，每个ListNode*都是智能指针。</p>
+<p>存在的问题：</p>
+<ul>
+<li>遍历链表时，每走过一个节点，该节点引用数+1，离开时引用数-1，原子操作比较慢，因此搜索速度慢，不满足CSDS的原则</li>
+<li>采用递归方式释放整个链表，或者链表中的一段，可能会导致栈溢出</li>
+<li>如果一个线程获得一个结点的引用计数，但被卡住了一段时间之后才会释放这个计数，该节点所有的后继节点都会被延迟释放</li>
+</ul>
+<h3 id="并行扩张树P-tree"><a href="#并行扩张树P-tree" class="headerlink" title="并行扩张树P-tree"></a>并行扩张树P-tree</h3><p>SunYihan  <em>Parallel Ordered Sets Using Join</em> 2016,<em>PAM: Parallel Augmented Maps</em> 2018,<em>Join-based Parallel Balanced Binary Trees</em> 2019</p>
+<p>对于存储在磁盘上的上万个图节点，在做图算法时，对图进行虚拟化。虚拟图可以使用如下两种方式来动态构建：1. “中断”式的构建；2. 多线程的构建，即存在一个扫描线程，后台扫描满足要求的节点，加载到虚拟图中。</p>
+<p>所谓“中断”式的构建，是指要遍历到的下一个节点不在虚拟图上，触发“中断”，开始从磁盘加载一批新的图节点进来。而多线程构建方式，则是动态卸载已经访问过的节点，同时动态加载新的节点。为了提高对虚拟图读写的并发性，就需要使用一种数据结构：Parrellel Auguemented Map.</p>
+<p>两个基本函数：</p>
+<p><code>join(l,k,R)</code>，表示以k为根节点连接的左右两棵子树LR</p>
+<p><code>expose(T)</code>表示以树T的根k作为分裂节点，将树分裂为L，k，R并返回</p>
+<p>相关函数：</p>
+<p><strong>split ()以k为节点划分树，返回左子树，右子树和是否null</strong></p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">split(T,k)
+    	if T = null 
+            (null,false,null)
+        else (L,m,R)=expose(T)
+        	if k = m 
+            	(L,true,R)
+            else if k &lt; m
+                (LL,b,LR)=split(L,k)
+                (LL,b,join(LR,m,R))
+            else 
+                (RL,b,RR)=split(R,k)
+                (join(L,m,RL),b,RR)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>insert（）插入一个新节点</strong></p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">insert(T,k)
+ 	(TL,m,TR)=split(T,k)
+    join(TL,k,TR)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p><strong>splitlast() 移除T最大值的节点（即右子树的最下方的值，返回移除后的平衡树和移除的节点）</strong></p>
+<pre class="line-numbers language-none"><code class="language-none">splitlast(T)
+    (L,k,R)=expose(T)
+    if R=null
+        (L,k)
+    else
+        (T',k')=splitLast(R)
+        (join(L,k,T'),k')<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>join2() 将两棵树拼接起来，根节点为左子树的最大根</strong></p>
+<pre class="line-numbers language-none"><code class="language-none">join2(TL,TR)
+    if TL = null
+        TR
+    else
+       	(TL',k)=splitlast(TL)
+       	join(TL',k,TR)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>delete()从T中删除一个节点k</strong></p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">delete(T,k)
+    (TL,m,TR)=split(T,k)
+    join2(TL,TR)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>以上的几个函数未涉及并发，在以上的基础上，使用并发进行实现以下函数：(用来处理节点过多的情况，提高效率)</p>
+<p><em>其中，||表示左右两边的函数可以并发进行</em></p>
+<p><strong>union()将两个树合并成一个新的树</strong></p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">union(T1,T2)
+    if T1 = null 
+        T2
+    else if T2 = null
+        T1
+    else
+        (L2,k,R2)=expose(T2)
+        (L1,m,R1)=spilt(T1,k)
+       	TL=union(L1,L2)|| TR=union(R1,R2)
+        join(TL,k,TR)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>difference(T1,T2) 将T1中包含T2的节点删除，可以用来批量删除节点</strong></p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">difference(T1,T2)
+    if T1=null
+        null
+    else if T2=null
+        T1
+    else
+        (L2,k,R2)=expose(T2)
+        (L1,m,R2)=split(T1,k)
+        T1=difference(L1,L2) || T2=difference(R1,R2)
+        join2(T1,TR)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">SN1987A</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://sn1987a-1.github.io/posts/a4d33f77.html">http://sn1987a-1.github.io/posts/a4d33f77.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://sn1987a-1.github.io" target="_blank">SN1987A</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E5%B9%B6%E8%A1%8C%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">并行数据结构</a></div><div class="post_share"><div class="social-share" data-image="https://user-images.githubusercontent.com/74918703/155833584-1eba0e4e-2d29-48a6-a5a2-c04cc982b0ec.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/posts/6d104c29.html"><img class="prev-cover" src= "data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs=" data-lazy-src="https://user-images.githubusercontent.com/74918703/155833614-94542aa5-0d30-4691-95d6-9d35a95eaa6a.png" onerror="onerror=null;src='https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/img/friend_404.gif'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Gin框架</div></div></a></div><div class="next-post pull-right"><a href="/posts/d4c66f48.html"><img class="next-cover" src= "data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs=" data-lazy-src="https://user-images.githubusercontent.com/74918703/155833614-94542aa5-0d30-4691-95d6-9d35a95eaa6a.png" onerror="onerror=null;src='https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/img/friend_404.gif'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">CGO</div></div></a></div></nav><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs=" data-lazy-src="https://user-images.githubusercontent.com/74918703/157878087-7f268ec6-e86a-4e5f-be80-4846ee8d644c.png" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">SN1987A</div><div class="author-info__description">Learn not and know not.</div></div><div class="card-info-data"><div class="card-info-data-item is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">16</div></a></div><div class="card-info-data-item is-center"><a href="/tags/"><div class="headline">标签</div><div class="length-num">17</div></a></div><div class="card-info-data-item is-center"><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div></div><a class="button--animated" id="card-info-btn" target="_blank" rel="noopener" href="http://home.ustc.edu.cn/~lay_sn1987a/"><i class="fab fa-home"></i><span>个人主页</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/sn1987a-1/" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="tencent://AddContact/?fromId=45&amp;fromSubId=1&amp;subcmd=all&amp;uin=945093063&amp;website=www.qtxml.cn" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn card-announcement-animation"></i><span>公告</span></div><div class="announcement_content">我希望正在读这句话的人永远开心 contract me----mail lay_sn1987a@mail.ustc.edu.cn</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B9%B6%E8%A1%8C%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="toc-number">1.</span> <span class="toc-text">并行数据结构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B9%B6%E8%A1%8C%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E8%AE%BE%E8%AE%A1"><span class="toc-number">1.1.</span> <span class="toc-text">并行数据结构设计</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8D%95%E9%93%BE%E8%A1%A8"><span class="toc-number">1.1.1.</span> <span class="toc-text">单链表</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B9%B6%E8%A1%8C%E6%89%A9%E5%BC%A0%E6%A0%91P-tree"><span class="toc-number">1.2.</span> <span class="toc-text">并行扩张树P-tree</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/6d104c29.html" title="Gin框架"><img src= "data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs=" data-lazy-src="https://user-images.githubusercontent.com/74918703/155833614-94542aa5-0d30-4691-95d6-9d35a95eaa6a.png" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/img/friend_404.gif'" alt="Gin框架"/></a><div class="content"><a class="title" href="/posts/6d104c29.html" title="Gin框架">Gin框架</a><time datetime="2023-09-23T12:48:34.000Z" title="发表于 2023-09-23 20:48:34">2023-09-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/a4d33f77.html" title="并行数据结构-p-tree"><img src= "data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs=" data-lazy-src="https://user-images.githubusercontent.com/74918703/155833584-1eba0e4e-2d29-48a6-a5a2-c04cc982b0ec.png" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/img/friend_404.gif'" alt="并行数据结构-p-tree"/></a><div class="content"><a class="title" href="/posts/a4d33f77.html" title="并行数据结构-p-tree">并行数据结构-p-tree</a><time datetime="2023-09-22T07:46:11.000Z" title="发表于 2023-09-22 15:46:11">2023-09-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/d4c66f48.html" title="CGO"><img src= "data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs=" data-lazy-src="https://user-images.githubusercontent.com/74918703/155833614-94542aa5-0d30-4691-95d6-9d35a95eaa6a.png" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/img/friend_404.gif'" alt="CGO"/></a><div class="content"><a class="title" href="/posts/d4c66f48.html" title="CGO">CGO</a><time datetime="2023-09-20T12:48:34.000Z" title="发表于 2023-09-20 20:48:34">2023-09-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/c303e9c6.html" title="Golang基础知识"><img src= "data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs=" data-lazy-src="https://user-images.githubusercontent.com/74918703/155833614-94542aa5-0d30-4691-95d6-9d35a95eaa6a.png" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/img/friend_404.gif'" alt="Golang基础知识"/></a><div class="content"><a class="title" href="/posts/c303e9c6.html" title="Golang基础知识">Golang基础知识</a><time datetime="2023-09-18T12:48:34.000Z" title="发表于 2023-09-18 20:48:34">2023-09-18</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/156324.html" title="程序设计II大作业--chatbot"><img src= "data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs=" data-lazy-src="https://user-images.githubusercontent.com/74918703/155833471-10c2dd15-9579-4516-a86b-539be619066d.png" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/img/friend_404.gif'" alt="程序设计II大作业--chatbot"/></a><div class="content"><a class="title" href="/posts/156324.html" title="程序设计II大作业--chatbot">程序设计II大作业--chatbot</a><time datetime="2022-05-17T15:12:20.000Z" title="发表于 2022-05-17 23:12:20">2022-05-17</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2021 - 2023  <i id="heartbeat" class="fa fas fa-heartbeat"></i> SN1987A</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div><script type="text/javascript" id="maid-script" src="https://unpkg.com/mermaid@undefined/dist/mermaid.min.js?v=undefined"></script><script>if (window.mermaid) {
+  var options = JSON.parse(document.getElementById('maid-script').getAttribute('mermaidoptioins'));
+  mermaid.initialize(options);
+}
+</script><head><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/HCLonely/images@master/others/heartbeat.min.css"></head></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><div class="search-dialog__title" id="local-search-title">本地搜索</div><div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div><hr/><div id="local-search-results"></div><span class="search-close-button"><i class="fas fa-times"></i></span></div><div id="search-mask"></div></div><div><script src="https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/js/utils.js"></script><script src="https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/js/main.js"></script><script src="https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/js/search/local-search.js"></script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',preloader.endLoading())</script><div class="js-pjax"><script>if (!window.MathJax) {
+  window.MathJax = {
+    tex: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"]],
+      tags: 'ams'
+    },
+    chtml: {
+      scale: 1.2
+    },
+    options: {
+      renderActions: {
+        findScript: [10, doc => {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/)
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+            const text = document.createTextNode('')
+            node.parentNode.replaceChild(text, node)
+            math.start = {node: text, delim: '', n: 0}
+            math.end = {node: text, delim: '', n: 0}
+            doc.math.push(math)
+          }
+        }, ''],
+        insertScript: [200, () => {
+          document.querySelectorAll('mjx-container:not\([display]\)').forEach(node => {
+            const target = node.parentNode
+            if (target.nodeName.toLowerCase() === 'li') {
+              target.parentNode.classList.add('has-jax')
+            } else {
+              target.classList.add('has-jax')
+            }
+          });
+        }, '', false]
+      }
+    }
+  }
+  
+  const script = document.createElement('script')
+  script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js'
+  script.id = 'MathJax-script'
+  script.async = true
+  document.head.appendChild(script)
+} else {
+  MathJax.startup.document.state(0)
+  MathJax.texReset()
+  MathJax.typeset()
+}</script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css"><script src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.css"><script>(() => {
+  document.querySelectorAll('#article-container span.katex-display').forEach(item => {
+    btf.wrap(item, 'div', { class: 'katex-wrap'})
+  })
+})()</script><script>if (document.getElementsByClassName('mermaid').length) {
+  if (window.mermaidJsLoad) mermaid.init()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js').then(() => {
+      window.mermaidJsLoad = true
+      mermaid.initialize({
+        theme: 'default',
+      })
+      true && mermaid.init()
+    })
+  }
+}</script><script>function loadValine () {
+  function initValine () {
+    const valine = new Valine(Object.assign({
+      el: '#vcomment',
+      appId: '',
+      appKey: '',
+      placeholder: 'haven't done！',
+      avatar: 'monsterid',
+      meta: 'nick,mail,link'.split(','),
+      pageSize: '10',
+      lang: 'zh-CN',
+      recordIP: false,
+      serverURLs: '',
+      emojiCDN: '',
+      emojiMaps: "",
+      enableQQ: false,
+      path: window.location.pathname,
+      requiredFields: ["nick,mail"],
+      visitor: false
+    }, null))
+  }
+
+  if (typeof Valine === 'function') initValine() 
+  else getScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js').then(initValine)
+}
+
+if ('Valine' === 'Valine' || !true) {
+  if (true) btf.loadComment(document.getElementById('vcomment'),loadValine)
+  else setTimeout(loadValine, 0)
+} else {
+  function loadOtherComment () {
+    loadValine()
+  }
+}</script></div><script defer id="dsq-count-scr" src="//xianqi.disqus.com/count.js" async></script><script defer type="text/javascript" src="https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/js/sakura.js"></script><script defer type="text/javascript" src="https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/js/animate.js"></script><div class="aplayer no-destroy" data-id="1776127550" data-server="tencent" data-type="playlist" data-fixed="true" data-mini="true" data-listFolded="false" data-order="random" data-preload="auto" data-autoplay="true" muted></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/fireworks.min.js"></script><script defer="defer" id="fluttering_ribbon" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/canvas-fluttering-ribbon.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = false;
+POWERMODE.mobile = false;
+document.body.addEventListener('input', POWERMODE);
+</script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>let pjaxSelectors = [
+  'title',
+  '#config-diff',
+  '#body-wrap',
+  '#rightside-config-hide',
+  '#rightside-config-show',
+  '.js-pjax'
+]
+
+if (false) {
+  pjaxSelectors.unshift('meta[property="og:image"]', 'meta[property="og:title"]', 'meta[property="og:url"]')
+}
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+
+  // removeEventListener scroll 
+  window.removeEventListener('scroll', window.tocScrollFn)
+  window.removeEventListener('scroll', scrollCollect)
+
+  typeof preloader === 'object' && preloader.initLoading()
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof chatBtnFn === 'function' && chatBtnFn()
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // Analytics
+  if (false) {
+    MtaH5.pgv()
+  }
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+
+  typeof preloader === 'object' && preloader.endLoading()
+})
+
+document.addEventListener('pjax:error', (e) => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/404.html')
+  }
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"left","width":150,"height":300},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
