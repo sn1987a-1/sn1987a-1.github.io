@@ -1,0 +1,761 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>编译原理-GVN | SN1987A</title><meta name="keywords" content="专业课"><meta name="author" content="SN1987A"><meta name="copyright" content="SN1987A"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="思考题 请简述概念：支配性、严格支配性、直接支配性、支配边界。   支配性 在入口节点为b0的流图中，若bi在从b0到bj的所有路径中均出现，则称b1支配bj，其中Dom(bj)是所有支配bj的节点的集合   严格支配性 对于流图中给定的节点b，若节点$a\in Dom(b)-b$,则称a严格支配b节点   直接支配性 对于流图中给定的节点b，严格支配b的节点集合为Dom(b)-b,在该集合中距离">
+<meta property="og:type" content="article">
+<meta property="og:title" content="编译原理-GVN">
+<meta property="og:url" content="http://sn1987a-1.github.io/posts/7e7a9082.html">
+<meta property="og:site_name" content="SN1987A">
+<meta property="og:description" content="思考题 请简述概念：支配性、严格支配性、直接支配性、支配边界。   支配性 在入口节点为b0的流图中，若bi在从b0到bj的所有路径中均出现，则称b1支配bj，其中Dom(bj)是所有支配bj的节点的集合   严格支配性 对于流图中给定的节点b，若节点$a\in Dom(b)-b$,则称a严格支配b节点   直接支配性 对于流图中给定的节点b，严格支配b的节点集合为Dom(b)-b,在该集合中距离">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://user-images.githubusercontent.com/74918703/155833614-94542aa5-0d30-4691-95d6-9d35a95eaa6a.png">
+<meta property="article:published_time" content="2022-11-14T12:48:34.000Z">
+<meta property="article:modified_time" content="2023-09-24T05:30:05.756Z">
+<meta property="article:author" content="SN1987A">
+<meta property="article:tag" content="专业课">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://user-images.githubusercontent.com/74918703/155833614-94542aa5-0d30-4691-95d6-9d35a95eaa6a.png"><link rel="shortcut icon" href="https://user-images.githubusercontent.com/74918703/157878087-7f268ec6-e86a-4e5f-be80-4846ee8d644c.png"><link rel="canonical" href="http://sn1987a-1.github.io/posts/7e7a9082"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  noticeOutdate: {"limitDay":365,"position":"top","messagePrev":"一年之内的产物","messageNext":"技术可能存在过期"},
+  highlight: {"plugin":"prismjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":200},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":50,"languages":{"author":"作者: SN1987A","link":"链接: ","source":"来源: SN1987A","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    jQuery: 'https://cdn.bootcss.com/jquery/3.1.1/jquery.min.js',
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+    },
+    fancybox: {
+      js: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css'
+    }
+  },
+  isPhotoFigcaption: true,
+  islazyload: true,
+  isanchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '编译原理-GVN',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-09-24 13:30:05'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if (GLOBAL_CONFIG_SITE.isHome && /iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    document.addEventListener('pjax:complete', detectApple)})(window)</script><link defer rel="stylesheet" href="/css/customm.css" ><link defer rel="stylesheet" href="https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/css/icon.css"><link defer rel="stylesheet" href="https://cdn.jsdelivr.net/gh/HCLonely/images@master/others/heartbeat.min.css"><link defer rel="stylesheet" href="https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/css/background.css"><meta name="generator" content="Hexo 5.2.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+<link rel="alternate" href="/atom.xml" title="SN1987A" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src= "data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs=" data-lazy-src="https://user-images.githubusercontent.com/74918703/157878087-7f268ec6-e86a-4e5f-be80-4846ee8d644c.png" onerror="onerror=null;src='https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/img/friend_404.gif'" alt="avatar"/></div><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">文章</div><div class="length-num">32</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">标签</div><div class="length-num">10</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">分类</div><div class="length-num">17</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fas fa-archive"></i><span> 归档</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/artitalk/"><i class="fa-fw fas fa-book"></i><span> 说说</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> 时轴</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fas fa-heartbeat"></i><span> 清单</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/List/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/List/gallery/"><i class="fa-fw fa fa-image"></i><span> 相册</span></a></li><li><a class="site-page child" href="/List/movies/"><i class="fa-fw fa fa-film"></i><span> 视频</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/tools/"><i class="fa-fw fa fa-suitcase"></i><span> 百宝箱</span></a></div><div class="menus_item"><a class="site-page" href="/Windows/"><i class="fa-fw fa fa-desktop"></i><span> Windows</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> 关于我</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://user-images.githubusercontent.com/74918703/155833614-94542aa5-0d30-4691-95d6-9d35a95eaa6a.png')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">SN1987A</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fas fa-archive"></i><span> 归档</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/artitalk/"><i class="fa-fw fas fa-book"></i><span> 说说</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> 时轴</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fas fa-heartbeat"></i><span> 清单</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/List/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/List/gallery/"><i class="fa-fw fa fa-image"></i><span> 相册</span></a></li><li><a class="site-page child" href="/List/movies/"><i class="fa-fw fa fa-film"></i><span> 视频</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/tools/"><i class="fa-fw fa fa-suitcase"></i><span> 百宝箱</span></a></div><div class="menus_item"><a class="site-page" href="/Windows/"><i class="fa-fw fa fa-desktop"></i><span> Windows</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> 关于我</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">编译原理-GVN</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-11-14T12:48:34.000Z" title="发表于 2022-11-14 20:48:34">2022-11-14</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-09-24T05:30:05.756Z" title="更新于 2023-09-24 13:30:05">2023-09-24</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/">编译原理</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">5k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>19分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="编译原理-GVN"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="思考题"><a href="#思考题" class="headerlink" title="思考题"></a>思考题</h2><ol>
+<li>请简述概念：支配性、严格支配性、直接支配性、支配边界。</li>
+</ol>
+<ul>
+<li>支配性<ul>
+<li>在入口节点为b0的流图中，若bi在从b0到bj的所有路径中均出现，则称b1支配bj，其中Dom(bj)是所有支配bj的节点的集合</li>
+</ul>
+</li>
+<li>严格支配性<ul>
+<li>对于流图中给定的节点b，若节点$a\in Dom(b)-b$,则称a严格支配b节点</li>
+</ul>
+</li>
+<li>直接支配性<ul>
+<li>对于流图中给定的节点b，严格支配b的节点集合为Dom(b)-b,在该集合中距离b最近的节点直接支配b，记为IDom(b)</li>
+</ul>
+</li>
+<li>支配边界<ul>
+<li>对于流图中给定的节点b，若节点a满足:(1)b支配a一个前驱q($q\in preds(a),b\in Dom(q)$)(2)b不严格支配a，将具有这种性质的a的集合记为b的支配边界DF(b)</li>
+</ul>
+</li>
+</ul>
+<ol>
+<li><code>phi</code>节点是SSA的关键特征，请简述<code>phi</code>节点的概念，以及引入<code>phi</code>节点的理由。</li>
+</ol>
+<p><code>phi</code>节点:出现在程序基本块汇合节点的对某一变量x进行一次新的定义，作为程序的一条指令，完成了将来自不同边的x的值进行合并的工作</p>
+<p>引入理由:为了满足SSA的静态单赋值形式，沿着流图的不同路径，x的当前值可能被分配了一个唯一的名字，在多条路径的汇合处，不同的静态单赋值形式名必须调整为一个名字，<code>phi</code>节点的作用就是在路径汇合点将同一变量的多个形式名合并为一个名字。</p>
+<ol>
+<li><p>观察下面给出的<code>cminus</code>程序对应的 LLVM IR，与<strong>开启</strong><code>Mem2Reg</code>生成的LLVM IR对比，每条<code>load</code>, <code>store</code>指令发生了变化吗？变化或者没变化的原因是什么？请分类解释。</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">int</span> globVar<span class="token punctuation">;</span>
+<span class="token keyword">int</span> <span class="token function">func</span><span class="token punctuation">(</span><span class="token keyword">int</span> x<span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span>x <span class="token operator">&gt;</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+        x <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">return</span> x<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token keyword">int</span> arr<span class="token punctuation">[</span><span class="token number">10</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token keyword">int</span> b<span class="token punctuation">;</span>
+    globVar <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+    arr<span class="token punctuation">[</span><span class="token number">5</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">999</span><span class="token punctuation">;</span>
+    b <span class="token operator">=</span> <span class="token number">2333</span><span class="token punctuation">;</span>
+    <span class="token function">func</span><span class="token punctuation">(</span>b<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">func</span><span class="token punctuation">(</span>globVar<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>before <code>Mem2Reg</code>：</p>
+<pre class="line-numbers language-asm" data-language="asm"><code class="language-asm">@globVar = global i32 zeroinitializer
+declare void @neg_idx_except()
+define i32 @func(i32 %arg0) {
+label_entry:
+  %op1 = alloca i32
+  store i32 %arg0, i32* %op1
+  %op2 = load i32, i32* %op1
+  %op3 = icmp sgt i32 %op2, 0
+  %op4 = zext i1 %op3 to i32
+  %op5 = icmp ne i32 %op4, 0
+  br i1 %op5, label %label6, label %label7
+label6:                                                ; preds = %label_entry
+  store i32 0, i32* %op1
+  br label %label7
+label7:                                                ; preds = %label_entry, %label6
+  %op8 = load i32, i32* %op1
+  ret i32 %op8
+}
+define i32 @main() {
+label_entry:
+  %op0 = alloca [10 x i32]
+  %op1 = alloca i32
+  store i32 1, i32* @globVar
+  %op2 = icmp slt i32 5, 0
+  br i1 %op2, label %label3, label %label4
+label3:                                                ; preds = %label_entry
+  call void @neg_idx_except()
+  ret i32 0
+label4:                                                ; preds = %label_entry
+  %op5 = getelementptr [10 x i32], [10 x i32]* %op0, i32 0, i32 5
+  store i32 999, i32* %op5
+  store i32 2333, i32* %op1
+  %op6 = load i32, i32* %op1
+  %op7 = call i32 @func(i32 %op6)
+  %op8 = load i32, i32* @globVar
+  %op9 = call i32 @func(i32 %op8)
+  ret i32 0
+}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>After <code>Mem2Reg</code>：</p>
+<pre class="line-numbers language-asm" data-language="asm"><code class="language-asm">@globVar = global i32 zeroinitializer
+declare void @neg_idx_except()
+define i32 @func(i32 %arg0) {
+label_entry:
+  %op3 = icmp sgt i32 %arg0, 0
+  %op4 = zext i1 %op3 to i32
+  %op5 = icmp ne i32 %op4, 0
+  br i1 %op5, label %label6, label %label7
+label6:                                                ; preds = %label_entry
+  br label %label7
+label7:                                                ; preds = %label_entry, %label6
+  %op9 = phi i32 [ %arg0, %label_entry ], [ 0, %label6 ]
+  ret i32 %op9
+}
+define i32 @main() {
+label_entry:
+  %op0 = alloca [10 x i32]
+  store i32 1, i32* @globVar
+  %op2 = icmp slt i32 5, 0
+  br i1 %op2, label %label3, label %label4
+label3:                                                ; preds = %label_entry
+  call void @neg_idx_except()
+  ret i32 0
+label4:                                                ; preds = %label_entry
+  %op5 = getelementptr [10 x i32], [10 x i32]* %op0, i32 0, i32 5
+  store i32 999, i32* %op5
+  %op7 = call i32 @func(i32 2333)
+  %op8 = load i32, i32* @globVar
+  %op9 = call i32 @func(i32 %op8)
+  ret i32 0
+}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>删除的<code>load</code>/<code>store</code>:</p>
+<ul>
+<li>第6，7行：程序中对变量x进行了多次赋值，在未开启Mem2Reg的IR中是通过冗余的访存实现的，在<code>load</code>语句前的程序块中已存在x对应的值，在删去该条<code>load</code>后，变量x不会被其他语句load，<code>store</code>语句也被删除，load和store是不必要的。</li>
+<li>第13行：此处对x的值进行了存储，但是在该语句之后x并不是活跃变量，x的值不会被调用，因此该处的store是多余的。</li>
+<li>第32，33行：程序中对变量b进行了赋值，又将b作为函数参数进行函数调用，函数调用时所用的值实际上就是立即数，是在该程序块中已存在对应的值，因此可以不用<code>load</code>，也无需<code>store</code>指令，此处可以删除load和store指令。</li>
+</ul>
+<p>未变化的<code>load</code>/<code>store</code>:</p>
+<ul>
+<li>第23行：此处<code>store</code>对全局变量globVar进行赋值，因为是用立即数更新数据的值，由于<code>Mem2Reg</code>不会对该全局变量进行处理，需要在此处存储变量的值，不存在冗余。</li>
+<li>第31行：此处<code>store</code>对数组a中的元素利用立即数进行赋值，由于<code>Mem2Reg</code>不会对数组型元素进行处理，需要在此处存储变量的值，不存在冗余。</li>
+<li>第35行：此处<code>load</code>将全局变量globVar的值赋给临时变量，用于后续函数调用作为函数的参数，且此前globVar对应的值在该块中不存在，不存在冗余，不需要删除。</li>
+</ul>
+</li>
+<li><p>指出放置phi节点的代码，并解释是如何使用支配树的信息的。（需要给出代码中的成员变量或成员函数名称）</p>
+<ul>
+<li>放置伪代码的函数为<code>src\optimization\Mem2Reg.cpp</code>中的<code>Mem2Reg::generate_phi</code>函数。</li>
+<li>step1：以基本块为单位，逐个遍历函数的所有指令，先找大活跃在多个基本块的变量及其对应的块，存储在<code>live_var_2blocks</code>中</li>
+<li>step2：对于所有的变量，逐次遍历<code>live_var_2blocks</code>,在对应的dom集合<code>bb_dominance_frontier_bb</code>中依次寻找支配边界，如果在该基本块中未添加<code>phi</code>（<code>bb_has_var_phi</code>中不存在记录）,则插入<code>phi</code>：<code>create_phi</code>,在<code>bb_dominance_frontier_bb</code>中添加该语句，并在<code>bb_has_var_phi</code>中添加记录，防止重复添加。</li>
+</ul>
+</li>
+<li><p>算法是如何选择<code>value</code>(变量最新的值)来替换<code>load</code>指令的？（描述清楚对应变量与维护该变量的位置）</p>
+</li>
+</ol>
+<ul>
+<li>选择<code>value</code>来替换<code>load</code>指令的位置在<code>src\optimization\Mem2Reg.cpp</code>中的<code>Mem2Reg::rename()</code>函数。</li>
+<li>对全局变量<code>var_val_stack</code>进行以下调用和维护：<ul>
+<li>第一次遍历基本块的所有指令：<code>phi</code>指令：根据插入的<code>phi</code>指令，将对应变量的最新定值的位置设为该<code>phi</code>语句</li>
+<li>第二次遍历基本块中的所有指令：<code>load</code>指令：如果load的变量在<code>var_val_stack</code>中已经存在，则将该语句加入<code>wait_delete</code>，并维护对应的全局变量。<code>store</code>指令：将store存入内存的值作为最新定值</li>
+<li>借助<code>get_succ_basic_blocks</code>补充因<code>phi</code>改动的<code>var_val_stack</code>对应的值</li>
+<li>第三次遍历基本块中的所有指令：pop出<code>var_val_stack</code>中的最新定值</li>
+</ul>
+</li>
+<li>在第二次遍历中，对于<code>load</code>指令，如果load的变量在<code>var_val_stack</code>中已经存在，则将该语句加入<code>wait_delete</code>，并利用<code>replace_all_use_with</code>函数维护其他指令。最后将<code>wait_delete</code>进行删除，也就是删除<code>load</code>指令。</li>
+</ul>
+<h3 id="代码阅读总结"><a href="#代码阅读总结" class="headerlink" title="代码阅读总结"></a>代码阅读总结</h3><p>此次实验的主要内容是熟悉代码优化的基础知识，了解SSA格式的IR的相关概念，并阅读了用来优化Lab3生成的IR指令的<code>Mem2Reg</code>相关代码,主要优化了冗余的load，store，alloca指令。主要收获是熟悉了支配节点，支配边界等概念，以及如何将这些概念用于代码优化，如何在程序中维护和利用这些属性来实现代码的优化。</p>
+<h2 id="PART2-实验要求"><a href="#PART2-实验要求" class="headerlink" title="PART2 实验要求"></a>PART2 实验要求</h2><p>本次实验要完成的目标是在lab4.1 SSA IR的基础上，根据实验框架完成对SSA IR基于数据流分析完成的GVN优化。</p>
+<h2 id="实验难点"><a href="#实验难点" class="headerlink" title="实验难点"></a>实验难点</h2><ul>
+<li>根据LLVM IR的指令类型设计Expression子类的类型，并通过递归定义的方法定义值表达式，完成<code>Value Expr</code></li>
+<li>处理<code>phi</code>指令，构思设计<code>copy stmt</code>部分和<code>intersect</code>,<code>ValuePhiFunc</code>函数</li>
+</ul>
+<h2 id="实验设计"><a href="#实验设计" class="headerlink" title="实验设计"></a>实验设计</h2><h3 id="实验思路"><a href="#实验思路" class="headerlink" title="实验思路"></a>实验思路</h3><h4 id="ValueNumber"><a href="#ValueNumber" class="headerlink" title="ValueNumber"></a>ValueNumber</h4><p>GVN的核心就是建立全局值编号，本次实验中使用valueexpr作为值编号，每个等价类的valueexpr是唯一的。</p>
+<p>为了解决可能存在的valueexpr相互依赖导致的无限递归的问题，将等价类运算符重载部分定义为：</p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">bool CongruenceClass::operator==(const CongruenceClass &amp;other) const {
+    auto v1=value_expr_;
+    auto v2=other.value_expr_;
+    if(v2==nullptr&amp;&amp;v1==nullptr)
+    return true;
+    else if(v1==nullptr||v2==nullptr)
+    return false;
+   if(members_==other.members_)
+    return true;
+    return false;
+}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>即，算法收敛的判断依据是根据等价类成员不再改变，而不是根据valueexpr的值不再改变，这样就可以避开valueexpr无限递归的情况。</p>
+<p>为了获取一个变量的valueexpr，将getVN定义如下：</p>
+<p>其中如果ve的表达式为SingleExpression的类型时，是在valueexpr寻找参数对应的值表达式时建立的Expression。</p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">shared_ptr&lt;Expression&gt; GVN::getVN(const partitions &amp;pout, shared_ptr&lt;Expression&gt; ve) {  if(ve==nullptr)   return nullptr;   
+    auto sve=std::dynamic_pointer_cast&lt;SingleExpression&gt;(ve);
+    if(sve!=nullptr)
+    { 
+        auto num=dynamic_cast&lt;Constant*&gt;(sve-&gt;va());
+        if(num!=nullptr)
+        return ConstantExpression::create(num);
+    for(auto &amp;cc:pout)
+    {
+        if(cc-&gt;index_==0)
+        return nullptr;
+        for(auto &amp;mem:cc-&gt;members_)
+            if(mem==sve-&gt;va())
+                return cc-&gt;value_expr_ ;
+    }
+    for(auto &amp;cc:pout)
+    {
+        if(cc-&gt;index_==0)
+        return nullptr;
+        if(*ve==*cc-&gt;value_expr_)
+        return cc-&gt;value_expr_;
+    }
+    return nullptr;
+}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h4 id="valueexpr"><a href="#valueexpr" class="headerlink" title="valueexpr"></a>valueexpr</h4><p>在Expression中新建若干子类，并完善对应的内部变量和创建，比较，打印等函数</p>
+<ul>
+<li><code>Single Expression</code>，存放非纯函数，load/store指令的value</li>
+<li><code>Constant Expression</code>，常数</li>
+<li><code>Binary Expression</code>，二元指令的操作数和类型</li>
+<li><code>Phi Expression</code>，phi指令的操作数</li>
+<li><code>Call Expression</code>，函数调用指令的函数类型和和函数参数，仅考虑纯函数</li>
+<li><code>Gep Expression</code>，存gep指令的操作数</li>
+<li><code>Cmp Expression</code>，类型为icmp的指令的指令类型（cmp_op)和操作数</li>
+<li><code>Fcmp Expression</code>，类型为fcmp的指令的指令类型（cmp_op)和操作数</li>
+<li><code>Trans Expression</code>，类型转换的指令类型和操作数</li>
+</ul>
+<p>根据指令类型的不同分别处理：</p>
+<ul>
+<li>phi指令：将在intersect中和transfer中处理，此处不会处理</li>
+<li>void类型指令：此类指令不会被处理</li>
+<li>call指令：若属于纯函数，找到参数的值表达式并建立<code>CallExpression</code>，否则新建一个<code>SingleExpression</code>类型的ve</li>
+<li>gep指令：类似于纯函数，找到各个参数对应的值表达式并建立<code>GepExpression</code></li>
+<li>cmp,fcmp,binary,fp2si,si2fp,zext指令：找到参数对应的值表达式，进行常量传播，并建立对应的expression：<code>CmpExpression,FcmpExpression,BinaryExpression,TransExpression</code></li>
+<li>其他语句，新建<code>SingleExpression</code>作为值表达式</li>
+</ul>
+<h4 id="处理Phi"><a href="#处理Phi" class="headerlink" title="处理Phi"></a>处理Phi</h4><p>由于Phi指令要作为<code>Copy stmt</code>加入每个基本块的前驱中，为了方便，可以在每个基本块指令遍历完后，遍历并处理该基本块后继中出现的phi指令，将后继块中的phi指令加入该基本块的等价类中。</p>
+<p>Phi指令为四元指令，指令操作数依次为[op,label;op,label],此处可以通过get_name()获取label和bb的名字进行比对，如果相同，则借助<code>transferFunction</code>在该块等价类中添加该条语句。</p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">auto succ=bb.get_succ_basic_blocks();
+if(succ.size()&gt;0)
+    for(auto s:succ)
+        for(auto &amp;sinst:s-&gt;get_instructions())
+            if(sinst.is_phi())
+            {
+                auto op0=sinst.get_operand(0);
+                //op1/2/3=...
+                if(op1-&gt;get_name()==bb.get_name())
+                    pouts=GVN::transferFunction(&amp;sinst,op0,pouts);
+                if(op3-&gt;get_name()==bb.get_name())
+                    pouts=GVN::transferFunction(&amp;sinst,op2,pouts);
+            }<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>为了处理存在了两个前驱块的基本块的pin，需要设计Join和intersect函数。</p>
+<p>其中，Top块设计为只含有一个等价类，且等价类的索引为0的集合;Join函数遇到Top块时，规定<code>Join(P, Top) = P = Join(Top, P)</code>，否则逐个遍历等价类并调用intersect函数。</p>
+<p>而对于Intersect函数，对于其他非phi语句，若members_存在交集，则必然有该两个等价类的值表达式一致，进行合并即可，否则合并得到的Ck为空；对于将出现在下一个基本块的（在上文中添加）的phi语句，就会存在<code>members</code>不为空且valueexpr不相等的情况，此时在Ck中根据Phi新建valueexpr和valuePhi语句，即可完成对Phi语句的处理。</p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">for(auto i :Ci-&gt;members_)
+    if(Cj-&gt;members_.find(i)!=Cj-&gt;members_.end())
+    {
+        Ck-&gt;members_.insert(i);
+        if(Ck-&gt;leader_==nullptr)
+            Ck-&gt;leader_=i;
+    }
+if(Ci-&gt;value_expr_==Cj-&gt;value_expr_)
+{
+    Ck-&gt;value_expr_=Ci-&gt;value_expr_;
+    Ck-&gt;value_phi_=Ci-&gt;value_phi_;
+    Ck-&gt;leader_=Ci-&gt;leader_;
+}
+else if(Ck-&gt;members_.size()!=0)
+{
+    Ck-&gt;value_phi_=PhiExpression::create(Ci-&gt;value_expr_,Cj-&gt;value_expr_);
+    Ck-&gt;value_expr_=PhiExpression::create(Ci-&gt;value_expr_,Cj-&gt;value_expr_);
+}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>此外，在valuePhiFunc函数中需要识别phi函数之间存在的冗余，函数思路如下：</p>
+<ul>
+<li>只需要处理binary函数中的phi语句存在的冗余，并且该binary指令的lhs和rhs均为Phi类型，根据指令的值表达式即可进行上述类型判断，指令格式为bin(phi(vi1,vj1),phi(vi2,vj2))</li>
+<li>根据vi1,vi2,vj1,vj2(此时均为值表达式)创建新的二元表达式：c1=bin(vi1,vi2),c2=bin(vj1,vj2)</li>
+<li>在该基本块的前驱块中找到c1,c2对应的值表达式，借助getVN实现，如果未找到对应的值表达式，则递归查找该前驱块的valuePhiFunc</li>
+<li>如果找到对应的值表达式，借助两个值表达式新建phi指令并返回，否则返回nullptr</li>
+</ul>
+<h4 id="transferFunction"><a href="#transferFunction" class="headerlink" title="transferFunction"></a>transferFunction</h4><p><code>transferFunction</code>函数的主要思路：</p>
+<ul>
+<li>在已有等价类中判断该指令是否已存在，如果存在则删除，如果该指令在对应的等价类中作为leader出现，将重新指定leader</li>
+<li>找到e对应的值表达式（getVN），如果找到，将x添加到对应的等价类集合中，（处理后继块phi语句的情况下可能会执行该步骤），返回pout</li>
+<li>如果e为常数类，因为上文中未找到对应的等价类，将新建等价类，value_expr_即为该常数对应的常数表达式，添加到pout中并返回</li>
+<li>调用valueexpr和valuePhifunc函数，找到对应的ve和vpf，并遍历已有等价类，如果已有等价类中存在该ve或vpf，即可在等价类中添加该成员，否则以该条指令为leader新建等价类，返回pout</li>
+</ul>
+<h4 id="detectEquivalences"><a href="#detectEquivalences" class="headerlink" title="detectEquivalences"></a>detectEquivalences</h4><p>在上述框架的基础上，完善<code>detectequivalences</code>函数：</p>
+<ul>
+<li><p>不断深度优先遍历基本块，直到每个基本块的等价类集合不再改变</p>
+</li>
+<li><p>在label_entry位置处理函数参数，全局变量，对于这类参数直接新建等价类即可</p>
+</li>
+<li><p>对于每个基本块，如果包含多个前驱，调用join获取pin，否则直接将前驱块的等价类作为pin</p>
+</li>
+<li><p>遍历每条指令并调用transferFunction函数更改当前基本块等价类成员</p>
+</li>
+<li><p>访问当前基本块的后继基本块，处理phi函数</p>
+<p>具体代码思路如下所示</p>
+</li>
+</ul>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">for(auto &amp;bb:func_-&gt;get_basic_blocks())
+    if(&amp;bb==entry) continue;
+    else pout_[&amp;bb]=clone(top);
+do 
+    next_value_number_=1;
+    changed=false;
+    for (auto &amp;bb : func_-&gt;get_basic_blocks()) 
+        partitions pouts={};
+        if(&amp;bb!=entry)
+            if( bb.get_pre_basic_blocks().size()&gt;1)
+            //use join() to deal with
+            else  for(auto s:predecessors) 
+                pouts=clone(pout_[s]);
+        else 
+            //deal with func args and global var
+        for(auto &amp;inst:bb.get_instructions())
+            if(!inst.is_void()&amp;&amp;!inst.is_phi())
+                pouts=GVN::transferFunction(&amp;inst,&amp;inst,pouts);
+        //deal with phi instr
+        if(pouts!=pout_[&amp;bb])
+            changed=true;  
+        pout_[&amp;bb]=std::move(pouts);
+while (changed);<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h4 id="常量传播"><a href="#常量传播" class="headerlink" title="常量传播"></a>常量传播</h4><p>常量传播/常量折叠是为了在编译时进行计算程序中存在的常数，如二元计算，cmp，类型转换指令，以便提供更多可优化的表达式，提高运行效率。只需要在两个地方处理：valueexpr部分和valuephifunc部分。</p>
+<p>valueexpr部分：对binary，cmp，trans语句均进行常量传播：</p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">//二元
+if(expr1-&gt;get_expr_type()==Expression::e_constant&amp;&amp;expr2-&gt;get_expr_type()==Expression:: e_constant)
+{
+    auto e1=std::dynamic_pointer_cast&lt;ConstantExpression&gt;(expr1);
+    auto e2=std::dynamic_pointer_cast&lt;ConstantExpression&gt;(expr2);
+    auto expr=folder_-&gt;compute(instr,e1-&gt;get_c(),e2-&gt;get_c());
+    return ConstantExpression::create(expr);
+}
+//一元
+ if(ve-&gt;get_expr_type()==Expression::e_constant)
+ {
+     auto e=std::dynamic_pointer_cast&lt;ConstantExpression&gt;(ve);
+     auto expr=folder_-&gt;compute(instr,e-&gt;get_c());
+     return ConstantExpression::create(expr);
+ }<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>在valuePhiFunc中，只需处理对binary指令的常量传播，为了方便计算，在ConstFolder类中添加对compute的重载（参数为Instruction::opID,Constant<em>,Constant\</em>)</p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++"> auto e1=std::dynamic_pointer_cast&lt;ConstantExpression&gt;(vi1);
+auto e2=std::dynamic_pointer_cast&lt;ConstantExpression&gt;(vi2);
+auto e=folder_-&gt;compute(opid,e1-&gt;get_c(),e2-&gt;get_c());
+c1=ConstantExpression::create(e);<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="举例"><a href="#举例" class="headerlink" title="举例"></a>举例</h3><p>以<code>bin.cminus</code>为例，未开启代码优化时，生成的LLVM 代码如下：</p>
+<pre class="line-numbers language-assembly" data-language="assembly"><code class="language-assembly">define i32 @main() {
+label_entry:
+  %op0 = call i32 @input()
+  %op1 = call i32 @input()
+  %op2 = icmp sgt i32 %op0, %op1
+  %op3 = zext i1 %op2 to i32
+  %op4 = icmp ne i32 %op3, 0
+  br i1 %op4, label %label5, label %label14
+label5:                                                ; preds = %label_entry
+  %op6 = add i32 33, 33
+  %op7 = add i32 44, 44
+  %op8 = add i32 %op6, %op7
+  br label %label9
+label9:                                                ; preds = %label5, %label14
+  %op10 = phi i32 [ %op8, %label5 ], [ %op17, %label14 ]
+  %op11 = phi i32 [ %op7, %label5 ], [ %op16, %label14 ]
+  %op12 = phi i32 [ %op6, %label5 ], [ %op15, %label14 ]
+  call void @output(i32 %op10)
+  %op13 = add i32 %op12, %op11
+  call void @output(i32 %op13)
+  ret i32 0
+label14:                                                ; preds = %label_entry
+  %op15 = add i32 55, 55
+  %op16 = add i32 66, 66
+  %op17 = add i32 %op15, %op16
+  br label %label9
+}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>开启代码优化后，最终生成的代码；</p>
+<pre class="line-numbers language-assembly" data-language="assembly"><code class="language-assembly">
+define i32 @main() {
+label_entry:
+  %op0 = call i32 @input()
+  %op1 = call i32 @input()
+  %op2 = icmp sgt i32 %op0, %op1
+  %op3 = zext i1 %op2 to i32
+  %op4 = icmp ne i32 %op3, 0
+  br i1 %op4, label %label5, label %label14
+label5:                                                ; preds = %label_entry
+  %op6 = add i32 33, 33
+  %op7 = add i32 44, 44
+  %op8 = add i32 %op6, %op7
+  br label %label9
+label9:                                                ; preds = %label5, %label14
+  %op10 = phi i32 [ %op8, %label5 ], [ %op17, %label14 ]
+  call void @output(i32 %op10)
+  call void @output(i32 %op10)
+  ret i32 0
+label14:                                                ; preds = %label_entry
+  %op15 = add i32 55, 55
+  %op16 = add i32 66, 66
+  %op17 = add i32 %op15, %op16
+  br label %label9
+}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>其中，<code>op13</code>和<code>op10</code>等价，经过死代码删除，将删除计算op13与op11，op12的语句。</p>
+<p>上述例子各个基本块的等价类如下所示：</p>
+<pre class="line-numbers language-josn" data-language="josn"><code class="language-josn">"label_entry": [["%op0", ], ["%op1", ], ["%op2", ], ["%op3", ], ["%op4", ], ],
+"label5": [["%op0", ], ["%op1", ], ["%op2", ], ["%op3", ], ["%op4", ], ["%op6", "%op12", ], ["%op7", "%op11", ], ["%op8", "%op10", ],  ],
+"label9": [["%op0", ], ["%op1", ], ["%op2", ], ["%op3", ], ["%op4", ], , ["%op13", "%op10", ], ["%op11", ], ["%op12", ], ],
+"label14": [["%op0", ], ["%op1", ], ["%op2", ], ["%op3", ], ["%op4", ], ["%op15", "%op12", ], ["%op16", "%op11", ], ["%op17", "%op10", ],, ],}},]<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="思考题-1"><a href="#思考题-1" class="headerlink" title="思考题"></a>思考题</h3><p>1.请简要分析你的算法复杂度</p>
+<p>仅对程序的主要部分以指令为单位进行讨论，实验完成部分的代码由<code>run()</code>函数逐个分析每个函数，并进入<code>detectEquivalences()</code>函数，在<code>detectEquivalences()</code>函数中，对函数中的基本块不断进行遍历分析得到每个基本块的<code>pin</code>和<code>pout</code>等价类，直到<code>pout</code>收敛，代表该函数分析完成，一般来说，遍历的次数为一个较小的数（通常小于10），视为常数；而对于每个基本块，要依次遍历基本块中的指令，在<code>transferfunction</code>中完成对每个指令的分析，同时在等价类中遍历寻找值表达式或对应的值。</p>
+<p>综上分析，对于一个程序，本实验算法的时间复杂度大约为$T(n)=O(n^2)$,其中n为指令条数</p>
+<p>2.<code>std::shared_ptr</code>如果存在环形引用，则无法正确释放内存，你的 Expression 类是否存在 circular reference?</p>
+<p>不存在。<code>Expression</code>的各个子类是递归定义的，其子类以及的构成方法如下：</p>
+<ul>
+<li><code>Single Expression</code>，由一个<code>Value *</code>组成，用来处理特殊指令，如非纯函数，<code>load</code>,<code>store</code>指令等</li>
+<li><code>Constant Expression</code>，由一个<code>Constant *</code>组成</li>
+<li><code>Binary Expression</code>，由两个<code>Expression</code>和指令类型组成</li>
+<li><code>Phi Expression</code>，由两个<code>Expression</code>组成</li>
+<li><code>Call Expression</code>，由几个<code>Expression</code>和<code>Function*</code>组成</li>
+<li><code>Gep Expression</code>，由几个<code>Expression</code>组成</li>
+<li><code>Cmp Expression</code>，由两个<code>Expression</code>和指令类型组成</li>
+<li><code>Fcmp Expression</code>，由两个<code>Expression</code>和指令类型组成</li>
+<li><code>Trans Expression</code>，由一个<code>Expression</code>和指令类型组成</li>
+</ul>
+<p>所有递归定义的Expression最终都会归结到<code>Single Expression</code>以及<code>Constant Expression</code>指令上，不会出现环形引用</p>
+<p>3.尽管本次实验已经写了很多代码，但是在算法上和工程上仍然可以对 GVN 进行改进，请简述你的 GVN 实现可以改进的地方</p>
+<ul>
+<li>本次实验<code>ValuePhiFunc</code>对Phi指令冗余的检测仅仅检测了<code>Binaray</code>指令的冗余情况，实际上可以扩大检测范围，并且增加检测冗余的形式，如检测<code>phi(0, c+d)</code>与 <code>phi(0,c)+phi(0,d)</code>，实现思路类似。</li>
+<li>效率较低，对于规模较大的代码，GVN分析的效率会变慢，可以通过减少代码中不必要的遍历操作提高算法效率。</li>
+</ul>
+<h2 id="实验总结"><a href="#实验总结" class="headerlink" title="实验总结"></a>实验总结</h2><ul>
+<li>本次实验基于论文《Detection of Redundant Expressions: A Complete and Polynomial-Time Algorithm in SSA 》基于数据流分析完成了SSA IR的GVN优化，通过动手实现和设计具体的算法，让我对数据流分析有了更清楚地认识</li>
+<li>本次实验作为代码优化部分与前几次实验共同完成了Cminus的Compiler，对《编译原理与技术》一课的课程内容有了更清晰的整体认识。</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">SN1987A</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://sn1987a-1.github.io/posts/7e7a9082.html">http://sn1987a-1.github.io/posts/7e7a9082.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://sn1987a-1.github.io" target="_blank">SN1987A</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E4%B8%93%E4%B8%9A%E8%AF%BE/">专业课</a></div><div class="post_share"><div class="social-share" data-image="https://user-images.githubusercontent.com/74918703/155833614-94542aa5-0d30-4691-95d6-9d35a95eaa6a.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/posts/72ae2b6b.html"><img class="prev-cover" src= "data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs=" data-lazy-src="https://user-images.githubusercontent.com/74918703/155833614-94542aa5-0d30-4691-95d6-9d35a95eaa6a.png" onerror="onerror=null;src='https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/img/friend_404.gif'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">ML算法：特征抽取</div></div></a></div><div class="next-post pull-right"><a href="/posts/8254dc99.html"><img class="next-cover" src= "data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs=" data-lazy-src="https://user-images.githubusercontent.com/74918703/155833614-94542aa5-0d30-4691-95d6-9d35a95eaa6a.png" onerror="onerror=null;src='https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/img/friend_404.gif'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">编译原理-词法分析</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span> 相关推荐</span></div><div class="relatedPosts-list"><div><a href="/posts/94cbcba9.html" title="代数结构习题课-1"><img class="cover" src= "data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs=" data-lazy-src="https://user-images.githubusercontent.com/74918703/155833614-94542aa5-0d30-4691-95d6-9d35a95eaa6a.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-05-02</div><div class="title">代数结构习题课-1</div></div></a></div><div><a href="/posts/1120.html" title="HUFFMAM Tree"><img class="cover" src= "data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs=" data-lazy-src="https://user-images.githubusercontent.com/74918703/155833614-94542aa5-0d30-4691-95d6-9d35a95eaa6a.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2021-11-11</div><div class="title">HUFFMAM Tree</div></div></a></div><div><a href="/posts/131000.html" title="DataStruct基础知识"><img class="cover" src= "data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs=" data-lazy-src="https://user-images.githubusercontent.com/74918703/155833471-10c2dd15-9579-4516-a86b-539be619066d.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-01-11</div><div class="title">DataStruct基础知识</div></div></a></div><div><a href="/posts/e95a583.html" title="AI algorithms"><img class="cover" src= "data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs=" data-lazy-src="https://user-images.githubusercontent.com/74918703/155833614-94542aa5-0d30-4691-95d6-9d35a95eaa6a.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-06-30</div><div class="title">AI algorithms</div></div></a></div><div><a href="/posts/58da92e9.html" title="Astar&CSP"><img class="cover" src= "data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs=" data-lazy-src="https://user-images.githubusercontent.com/74918703/155833614-94542aa5-0d30-4691-95d6-9d35a95eaa6a.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-06-01</div><div class="title">Astar&CSP</div></div></a></div><div><a href="/posts/26753.html" title="ChatBot"><img class="cover" src= "data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs=" data-lazy-src="https://user-images.githubusercontent.com/74918703/155833614-94542aa5-0d30-4691-95d6-9d35a95eaa6a.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-04-26</div><div class="title">ChatBot</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs=" data-lazy-src="https://user-images.githubusercontent.com/74918703/157878087-7f268ec6-e86a-4e5f-be80-4846ee8d644c.png" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">SN1987A</div><div class="author-info__description">Learn not and know not.</div></div><div class="card-info-data"><div class="card-info-data-item is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">32</div></a></div><div class="card-info-data-item is-center"><a href="/tags/"><div class="headline">标签</div><div class="length-num">10</div></a></div><div class="card-info-data-item is-center"><a href="/categories/"><div class="headline">分类</div><div class="length-num">17</div></a></div></div><a class="button--animated" id="card-info-btn" target="_blank" rel="noopener" href="http://home.ustc.edu.cn/~lay_sn1987a/"><i class="fab fa-home"></i><span>个人主页</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/sn1987a-1/" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="tencent://AddContact/?fromId=45&amp;fromSubId=1&amp;subcmd=all&amp;uin=945093063&amp;website=www.qtxml.cn" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn card-announcement-animation"></i><span>公告</span></div><div class="announcement_content">我希望正在读这句话的人永远开心 contract me----mail lay_sn1987a@mail.ustc.edu.cn</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%9D%E8%80%83%E9%A2%98"><span class="toc-number">1.</span> <span class="toc-text">思考题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB%E6%80%BB%E7%BB%93"><span class="toc-number">1.1.</span> <span class="toc-text">代码阅读总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PART2-%E5%AE%9E%E9%AA%8C%E8%A6%81%E6%B1%82"><span class="toc-number">2.</span> <span class="toc-text">PART2 实验要求</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E9%9A%BE%E7%82%B9"><span class="toc-number">3.</span> <span class="toc-text">实验难点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E8%AE%BE%E8%AE%A1"><span class="toc-number">4.</span> <span class="toc-text">实验设计</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E6%80%9D%E8%B7%AF"><span class="toc-number">4.1.</span> <span class="toc-text">实验思路</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#ValueNumber"><span class="toc-number">4.1.1.</span> <span class="toc-text">ValueNumber</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#valueexpr"><span class="toc-number">4.1.2.</span> <span class="toc-text">valueexpr</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%84%E7%90%86Phi"><span class="toc-number">4.1.3.</span> <span class="toc-text">处理Phi</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#transferFunction"><span class="toc-number">4.1.4.</span> <span class="toc-text">transferFunction</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#detectEquivalences"><span class="toc-number">4.1.5.</span> <span class="toc-text">detectEquivalences</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B8%B8%E9%87%8F%E4%BC%A0%E6%92%AD"><span class="toc-number">4.1.6.</span> <span class="toc-text">常量传播</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BE%E4%BE%8B"><span class="toc-number">4.2.</span> <span class="toc-text">举例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%9D%E8%80%83%E9%A2%98-1"><span class="toc-number">4.3.</span> <span class="toc-text">思考题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E6%80%BB%E7%BB%93"><span class="toc-number">5.</span> <span class="toc-text">实验总结</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/f54e13d4.html" title="ML算法：XGBoost"><img src= "data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs=" data-lazy-src="https://user-images.githubusercontent.com/74918703/155833614-94542aa5-0d30-4691-95d6-9d35a95eaa6a.png" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/img/friend_404.gif'" alt="ML算法：XGBoost"/></a><div class="content"><a class="title" href="/posts/f54e13d4.html" title="ML算法：XGBoost">ML算法：XGBoost</a><time datetime="2023-11-28T12:48:34.000Z" title="发表于 2023-11-28 20:48:34">2023-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/7ab554ae.html" title="ML算法：SVM"><img src= "data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs=" data-lazy-src="https://user-images.githubusercontent.com/74918703/155833614-94542aa5-0d30-4691-95d6-9d35a95eaa6a.png" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/img/friend_404.gif'" alt="ML算法：SVM"/></a><div class="content"><a class="title" href="/posts/7ab554ae.html" title="ML算法：SVM">ML算法：SVM</a><time datetime="2023-11-10T12:48:34.000Z" title="发表于 2023-11-10 20:48:34">2023-11-10</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/615503d3.html" title="编译原理-LLVM IR语法"><img src= "data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs=" data-lazy-src="https://user-images.githubusercontent.com/74918703/155833614-94542aa5-0d30-4691-95d6-9d35a95eaa6a.png" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/img/friend_404.gif'" alt="编译原理-LLVM IR语法"/></a><div class="content"><a class="title" href="/posts/615503d3.html" title="编译原理-LLVM IR语法">编译原理-LLVM IR语法</a><time datetime="2023-10-17T12:48:34.000Z" title="发表于 2023-10-17 20:48:34">2023-10-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/b38fcafd.html" title="LLVM IR语法"><img src= "data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs=" data-lazy-src="https://user-images.githubusercontent.com/74918703/155833614-94542aa5-0d30-4691-95d6-9d35a95eaa6a.png" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/img/friend_404.gif'" alt="LLVM IR语法"/></a><div class="content"><a class="title" href="/posts/b38fcafd.html" title="LLVM IR语法">LLVM IR语法</a><time datetime="2023-10-17T12:48:34.000Z" title="发表于 2023-10-17 20:48:34">2023-10-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/f1383170.html" title="ML算法：逻辑回归"><img src= "data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs=" data-lazy-src="https://user-images.githubusercontent.com/74918703/155833614-94542aa5-0d30-4691-95d6-9d35a95eaa6a.png" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/img/friend_404.gif'" alt="ML算法：逻辑回归"/></a><div class="content"><a class="title" href="/posts/f1383170.html" title="ML算法：逻辑回归">ML算法：逻辑回归</a><time datetime="2023-10-17T12:48:34.000Z" title="发表于 2023-10-17 20:48:34">2023-10-17</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2021 - 2023  <i id="heartbeat" class="fa fas fa-heartbeat"></i> SN1987A</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div><script type="text/javascript" id="maid-script" src="https://unpkg.com/mermaid@undefined/dist/mermaid.min.js?v=undefined"></script><script>if (window.mermaid) {
+  var options = JSON.parse(document.getElementById('maid-script').getAttribute('mermaidoptioins'));
+  mermaid.initialize(options);
+}
+</script><head><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/HCLonely/images@master/others/heartbeat.min.css"></head></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><div class="search-dialog__title" id="local-search-title">本地搜索</div><div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div><hr/><div id="local-search-results"></div><span class="search-close-button"><i class="fas fa-times"></i></span></div><div id="search-mask"></div></div><div><script src="https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/js/utils.js"></script><script src="https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/js/main.js"></script><script src="https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/js/search/local-search.js"></script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',preloader.endLoading())</script><div class="js-pjax"><script>if (!window.MathJax) {
+  window.MathJax = {
+    tex: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"]],
+      tags: 'ams'
+    },
+    chtml: {
+      scale: 1.2
+    },
+    options: {
+      renderActions: {
+        findScript: [10, doc => {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/)
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+            const text = document.createTextNode('')
+            node.parentNode.replaceChild(text, node)
+            math.start = {node: text, delim: '', n: 0}
+            math.end = {node: text, delim: '', n: 0}
+            doc.math.push(math)
+          }
+        }, ''],
+        insertScript: [200, () => {
+          document.querySelectorAll('mjx-container:not\([display]\)').forEach(node => {
+            const target = node.parentNode
+            if (target.nodeName.toLowerCase() === 'li') {
+              target.parentNode.classList.add('has-jax')
+            } else {
+              target.classList.add('has-jax')
+            }
+          });
+        }, '', false]
+      }
+    }
+  }
+  
+  const script = document.createElement('script')
+  script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js'
+  script.id = 'MathJax-script'
+  script.async = true
+  document.head.appendChild(script)
+} else {
+  MathJax.startup.document.state(0)
+  MathJax.texReset()
+  MathJax.typeset()
+}</script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css"><script src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.css"><script>(() => {
+  document.querySelectorAll('#article-container span.katex-display').forEach(item => {
+    btf.wrap(item, 'div', { class: 'katex-wrap'})
+  })
+})()</script><script>if (document.getElementsByClassName('mermaid').length) {
+  if (window.mermaidJsLoad) mermaid.init()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js').then(() => {
+      window.mermaidJsLoad = true
+      mermaid.initialize({
+        theme: 'default',
+      })
+      true && mermaid.init()
+    })
+  }
+}</script><script>function loadValine () {
+  function initValine () {
+    const valine = new Valine(Object.assign({
+      el: '#vcomment',
+      appId: '',
+      appKey: '',
+      placeholder: 'haven't done！',
+      avatar: 'monsterid',
+      meta: 'nick,mail,link'.split(','),
+      pageSize: '10',
+      lang: 'zh-CN',
+      recordIP: false,
+      serverURLs: '',
+      emojiCDN: '',
+      emojiMaps: "",
+      enableQQ: false,
+      path: window.location.pathname,
+      requiredFields: ["nick,mail"],
+      visitor: false
+    }, null))
+  }
+
+  if (typeof Valine === 'function') initValine() 
+  else getScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js').then(initValine)
+}
+
+if ('Valine' === 'Valine' || !true) {
+  if (true) btf.loadComment(document.getElementById('vcomment'),loadValine)
+  else setTimeout(loadValine, 0)
+} else {
+  function loadOtherComment () {
+    loadValine()
+  }
+}</script></div><script defer id="dsq-count-scr" src="//xianqi.disqus.com/count.js" async></script><script defer type="text/javascript" src="https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/js/sakura.js"></script><script defer type="text/javascript" src="https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/js/animate.js"></script><div class="aplayer no-destroy" data-id="1776127550" data-server="tencent" data-type="playlist" data-fixed="true" data-mini="true" data-listFolded="false" data-order="random" data-preload="auto" data-autoplay="true" muted></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/fireworks.min.js"></script><script defer="defer" id="fluttering_ribbon" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/canvas-fluttering-ribbon.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = false;
+POWERMODE.mobile = false;
+document.body.addEventListener('input', POWERMODE);
+</script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>let pjaxSelectors = [
+  'title',
+  '#config-diff',
+  '#body-wrap',
+  '#rightside-config-hide',
+  '#rightside-config-show',
+  '.js-pjax'
+]
+
+if (false) {
+  pjaxSelectors.unshift('meta[property="og:image"]', 'meta[property="og:title"]', 'meta[property="og:url"]')
+}
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+
+  // removeEventListener scroll 
+  window.removeEventListener('scroll', window.tocScrollFn)
+  window.removeEventListener('scroll', scrollCollect)
+
+  typeof preloader === 'object' && preloader.initLoading()
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof chatBtnFn === 'function' && chatBtnFn()
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // Analytics
+  if (false) {
+    MtaH5.pgv()
+  }
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+
+  typeof preloader === 'object' && preloader.endLoading()
+})
+
+document.addEventListener('pjax:error', (e) => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/404.html')
+  }
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"left","width":150,"height":300},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>

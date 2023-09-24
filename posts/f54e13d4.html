@@ -1,0 +1,539 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ML算法：XGBoost | SN1987A</title><meta name="keywords" content="专业课"><meta name="author" content="SN1987A"><meta name="copyright" content="SN1987A"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="XGBoost实验目的本实验要求学习XGBoost模型的原理，并实现该模型，以及在数据集上完成训练和测试。 实验原理XGBoost的基本原理就是以决策树作为基学习器的加法模型，每棵树根据前t个模型的输出计算节点的权重，最终的输出为：  y_i^{(t)}&#x3D;∑^t_{k&#x3D;1}f_k (x_i )&#x3D;y _i^{(t-1)}+f_t (x_i )本实验的问题模型为回归问题，即$𝑙𝑜𝑠𝑠(𝑦_�">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ML算法：XGBoost">
+<meta property="og:url" content="http://sn1987a-1.github.io/posts/f54e13d4.html">
+<meta property="og:site_name" content="SN1987A">
+<meta property="og:description" content="XGBoost实验目的本实验要求学习XGBoost模型的原理，并实现该模型，以及在数据集上完成训练和测试。 实验原理XGBoost的基本原理就是以决策树作为基学习器的加法模型，每棵树根据前t个模型的输出计算节点的权重，最终的输出为：  y_i^{(t)}&#x3D;∑^t_{k&#x3D;1}f_k (x_i )&#x3D;y _i^{(t-1)}+f_t (x_i )本实验的问题模型为回归问题，即$𝑙𝑜𝑠𝑠(𝑦_�">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://user-images.githubusercontent.com/74918703/155833614-94542aa5-0d30-4691-95d6-9d35a95eaa6a.png">
+<meta property="article:published_time" content="2023-11-28T12:48:34.000Z">
+<meta property="article:modified_time" content="2023-09-24T03:47:34.736Z">
+<meta property="article:author" content="SN1987A">
+<meta property="article:tag" content="专业课">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://user-images.githubusercontent.com/74918703/155833614-94542aa5-0d30-4691-95d6-9d35a95eaa6a.png"><link rel="shortcut icon" href="https://user-images.githubusercontent.com/74918703/157878087-7f268ec6-e86a-4e5f-be80-4846ee8d644c.png"><link rel="canonical" href="http://sn1987a-1.github.io/posts/f54e13d4"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  noticeOutdate: {"limitDay":365,"position":"top","messagePrev":"一年之内的产物","messageNext":"技术可能存在过期"},
+  highlight: {"plugin":"prismjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":200},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":50,"languages":{"author":"作者: SN1987A","link":"链接: ","source":"来源: SN1987A","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    jQuery: 'https://cdn.bootcss.com/jquery/3.1.1/jquery.min.js',
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+    },
+    fancybox: {
+      js: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css'
+    }
+  },
+  isPhotoFigcaption: true,
+  islazyload: true,
+  isanchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'ML算法：XGBoost',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-09-24 11:47:34'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if (GLOBAL_CONFIG_SITE.isHome && /iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    document.addEventListener('pjax:complete', detectApple)})(window)</script><link defer rel="stylesheet" href="/css/customm.css" ><link defer rel="stylesheet" href="https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/css/icon.css"><link defer rel="stylesheet" href="https://cdn.jsdelivr.net/gh/HCLonely/images@master/others/heartbeat.min.css"><link defer rel="stylesheet" href="https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/css/background.css"><meta name="generator" content="Hexo 5.2.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+<link rel="alternate" href="/atom.xml" title="SN1987A" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src= "data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs=" data-lazy-src="https://user-images.githubusercontent.com/74918703/157878087-7f268ec6-e86a-4e5f-be80-4846ee8d644c.png" onerror="onerror=null;src='https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/img/friend_404.gif'" alt="avatar"/></div><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">文章</div><div class="length-num">32</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">标签</div><div class="length-num">10</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">分类</div><div class="length-num">17</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fas fa-archive"></i><span> 归档</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/artitalk/"><i class="fa-fw fas fa-book"></i><span> 说说</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> 时轴</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fas fa-heartbeat"></i><span> 清单</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/List/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/List/gallery/"><i class="fa-fw fa fa-image"></i><span> 相册</span></a></li><li><a class="site-page child" href="/List/movies/"><i class="fa-fw fa fa-film"></i><span> 视频</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/tools/"><i class="fa-fw fa fa-suitcase"></i><span> 百宝箱</span></a></div><div class="menus_item"><a class="site-page" href="/Windows/"><i class="fa-fw fa fa-desktop"></i><span> Windows</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> 关于我</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://user-images.githubusercontent.com/74918703/155833614-94542aa5-0d30-4691-95d6-9d35a95eaa6a.png')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">SN1987A</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fas fa-archive"></i><span> 归档</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/artitalk/"><i class="fa-fw fas fa-book"></i><span> 说说</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> 时轴</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fas fa-heartbeat"></i><span> 清单</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/List/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/List/gallery/"><i class="fa-fw fa fa-image"></i><span> 相册</span></a></li><li><a class="site-page child" href="/List/movies/"><i class="fa-fw fa fa-film"></i><span> 视频</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/tools/"><i class="fa-fw fa fa-suitcase"></i><span> 百宝箱</span></a></div><div class="menus_item"><a class="site-page" href="/Windows/"><i class="fa-fw fa fa-desktop"></i><span> Windows</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> 关于我</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">ML算法：XGBoost</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2023-11-28T12:48:34.000Z" title="发表于 2023-11-28 20:48:34">2023-11-28</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-09-24T03:47:34.736Z" title="更新于 2023-09-24 11:47:34">2023-09-24</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">机器学习</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">1.6k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>7分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="ML算法：XGBoost"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="XGBoost"><a href="#XGBoost" class="headerlink" title="XGBoost"></a>XGBoost</h2><h3 id="实验目的"><a href="#实验目的" class="headerlink" title="实验目的"></a>实验目的</h3><p>本实验要求学习XGBoost模型的原理，并实现该模型，以及在数据集上完成训练和测试。</p>
+<h3 id="实验原理"><a href="#实验原理" class="headerlink" title="实验原理"></a>实验原理</h3><p>XGBoost的基本原理就是以决策树作为基学习器的加法模型，每棵树根据前t个模型的输出计算节点的权重，最终的输出为：</p>
+<script type="math/tex; mode=display">
+y_i^{(t)}=∑^t_{k=1}f_k (x_i )=y _i^{(t-1)}+f_t (x_i )</script><p>本实验的问题模型为回归问题，即$𝑙𝑜𝑠𝑠(𝑦_𝑖,𝑦 _𝑖^{(𝑡)} )=(𝑦_𝑖−\hat y _𝑖^{(𝑡)} )^2$。</p>
+<p>对于损失loss，记 $g_i$ 为一阶导数，$h_i$ 为二阶导数，即$g_i=\frac{\partial\ loss(y_i,y _i^{(t-1)})}{\partial\  y _i^{(t-1) } }=2(\hat y^{t-1}-y)$, $h_i=\frac{\partial^2 loss(y_i,y _i^{(t-1)} )}{\partial \ (y _i^{(t-1)} )^2 }=2\\ $。</p>
+<p>在训练第t棵决策树时,目标函数为$Obj^{(t)}=∑_{i=1}^n[g_i f_t (x_i )+\frac12 h_i f_t^2 (x_i)]+penalty(f_t )$</p>
+<p>对于一棵决策树，其惩罚为：</p>
+<script type="math/tex; mode=display">
+penalty(f)=\gamma\cdot T+\frac12\lambda\cdot\|w\|^2</script><p>将分配到第 $j$ 个叶子节点的样本用 $I_j$ 表示，即 $I_j=\{i|q(x_i )=j\} (1≤j≤T)$，在树结构确定时可以进行如下优化：</p>
+<script type="math/tex; mode=display">
+\begin{split}
+𝑂𝑏𝑗^{(𝑡)}
+&=∑_{𝑗=1}^𝑇[(∑_{i∈𝐼_𝑗}𝑔_𝑖 )w_j+\frac12(\sum_{i\in I_j}h_i+\lambda)w^2_j]+\gamma T
+\end{split}\\
+记 G_j=∑_{i∈𝐼_𝑗}𝑔_𝑖 , H_j=∑_{i∈𝐼_𝑗}h_𝑖 \\ Obj^{(t)}=\sum_{j=1}^T[G_jw_j+\frac12(H_j+\lambda)w_j^2]+\gamma T</script><p>求解$w$     :$w_j^*=-\frac{G_j}{H_j+\lambda}$，此时决策树的得分：$Obj^{(t)}=-\frac12\sum^{T}_{j=1}\frac{G_j^2}{H_j+\lambda}+\gamma T$</p>
+<h3 id="实验步骤"><a href="#实验步骤" class="headerlink" title="实验步骤"></a>实验步骤</h3><h4 id="读取数据和数据处理"><a href="#读取数据和数据处理" class="headerlink" title="读取数据和数据处理"></a>读取数据和数据处理</h4><p>数据文件中的各项数据均不含有NULL项，无需进行特殊处理。</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">df <span class="token operator">=</span> pd<span class="token punctuation">.</span>read_csv<span class="token punctuation">(</span><span class="token string">'train.data'</span><span class="token punctuation">)</span>
+df<span class="token punctuation">.</span>shape<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span>
+df <span class="token operator">=</span> pd<span class="token punctuation">.</span>read_csv<span class="token punctuation">(</span><span class="token string">'train.data'</span><span class="token punctuation">,</span>names<span class="token operator">=</span><span class="token punctuation">[</span>i <span class="token keyword">for</span> i <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span>df<span class="token punctuation">.</span>shape<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token comment">#重新读取数据，防止将第一行的数据识别为索引</span>
+Data<span class="token operator">=</span>np<span class="token punctuation">.</span>array<span class="token punctuation">(</span>df<span class="token punctuation">)</span>
+a<span class="token operator">=</span><span class="token builtin">int</span><span class="token punctuation">(</span><span class="token number">0.3</span><span class="token operator">*</span>Data<span class="token punctuation">.</span>shape<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+Data<span class="token operator">=</span>np<span class="token punctuation">.</span>c_<span class="token punctuation">[</span>Data<span class="token punctuation">,</span>np<span class="token punctuation">.</span>zeros<span class="token punctuation">(</span>Data<span class="token punctuation">.</span>shape<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">.</span>T<span class="token punctuation">]</span>
+num<span class="token operator">=</span>np<span class="token punctuation">.</span>random<span class="token punctuation">.</span>permutation<span class="token punctuation">(</span>Data<span class="token punctuation">.</span>shape<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+Data<span class="token operator">=</span>Data<span class="token punctuation">[</span>num<span class="token punctuation">]</span>
+test_data<span class="token operator">=</span>Data<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">:</span>a<span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token punctuation">:</span><span class="token punctuation">]</span>
+train_data<span class="token operator">=</span>Data<span class="token punctuation">[</span>a<span class="token punctuation">:</span><span class="token punctuation">,</span><span class="token punctuation">:</span><span class="token punctuation">]</span>
+<span class="token comment">#按照7：3的比例划分训练集和测试集</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>在数据集的基础上添加一列0，用来存储每轮训练结束后的预测值，即<code>data=[:,-2]</code>代表真实值,<code>data[:,-1]</code>代表预测值。</p>
+<h4 id="回归树模型"><a href="#回归树模型" class="headerlink" title="回归树模型"></a>回归树模型</h4><p>超参数:</p>
+<p>maxdepth=4,minscore=0,minindex=3,lambda=800,gamma=1e-7</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">class</span> <span class="token class-name">RegressionTree</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span> <span class="token punctuation">:</span>
+       <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>初始化
+    
+    <span class="token keyword">def</span> <span class="token function">Leaf</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span>data<span class="token punctuation">)</span><span class="token punctuation">:</span><span class="token comment">#叶节点</span>
+        G<span class="token operator">=</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token operator">*</span>np<span class="token punctuation">.</span><span class="token builtin">sum</span><span class="token punctuation">(</span>data<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">,</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token operator">-</span>data<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">,</span><span class="token operator">-</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        H<span class="token operator">=</span><span class="token number">2</span><span class="token operator">*</span>data<span class="token punctuation">.</span>shape<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span>
+        <span class="token keyword">return</span> <span class="token operator">-</span>G<span class="token operator">/</span><span class="token punctuation">(</span>H<span class="token operator">+</span>self<span class="token punctuation">.</span>lam<span class="token punctuation">)</span>
+    
+    <span class="token keyword">def</span> <span class="token function">Obj</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span>data<span class="token punctuation">)</span><span class="token punctuation">:</span><span class="token comment">#计算得分</span>
+        G<span class="token operator">=</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token operator">*</span>np<span class="token punctuation">.</span><span class="token builtin">sum</span><span class="token punctuation">(</span>data<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">,</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token operator">-</span>data<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">,</span><span class="token operator">-</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        H<span class="token operator">=</span><span class="token number">2</span><span class="token operator">*</span>data<span class="token punctuation">.</span>shape<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span>
+        obj<span class="token operator">=</span><span class="token operator">-</span>G<span class="token operator">**</span><span class="token number">2</span><span class="token operator">*</span><span class="token number">0.5</span><span class="token operator">/</span><span class="token punctuation">(</span>H<span class="token operator">+</span>self<span class="token punctuation">.</span>lam<span class="token punctuation">)</span><span class="token operator">+</span>self<span class="token punctuation">.</span>gamma
+        <span class="token keyword">return</span> obj
+
+    <span class="token keyword">def</span> <span class="token function">split</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span>data<span class="token punctuation">,</span>num<span class="token punctuation">,</span>val<span class="token punctuation">)</span><span class="token punctuation">:</span><span class="token comment">#根据num和val找到最佳划分</span>
+        lchild<span class="token operator">=</span>data<span class="token punctuation">[</span>np<span class="token punctuation">.</span>nonzero<span class="token punctuation">(</span>data<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">,</span>num<span class="token punctuation">]</span><span class="token operator">&lt;=</span>val<span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">,</span><span class="token punctuation">:</span><span class="token punctuation">]</span>
+        rchild<span class="token operator">=</span>data<span class="token punctuation">[</span>np<span class="token punctuation">.</span>nonzero<span class="token punctuation">(</span>data<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">,</span>num<span class="token punctuation">]</span><span class="token operator">&gt;</span>val<span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">,</span><span class="token punctuation">:</span><span class="token punctuation">]</span>
+        <span class="token keyword">return</span> lchild<span class="token punctuation">,</span>rchild
+
+    <span class="token keyword">def</span> <span class="token function">ChooseSplit</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span>data<span class="token punctuation">,</span>depth<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token triple-quoted-string string">"""
+        对样本集进行划分，找到最佳划分
+        """</span>
+        <span class="token keyword">if</span> data<span class="token punctuation">.</span>shape<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token operator">&lt;</span>self<span class="token punctuation">.</span>minindex <span class="token keyword">or</span> depth<span class="token operator">&gt;</span>self<span class="token punctuation">.</span>maxdepth<span class="token punctuation">:</span>
+            <span class="token keyword">return</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">,</span>self<span class="token punctuation">.</span>Leaf<span class="token punctuation">(</span>data<span class="token punctuation">)</span>
+        <span class="token keyword">if</span> <span class="token builtin">len</span><span class="token punctuation">(</span><span class="token builtin">set</span><span class="token punctuation">(</span>data<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">,</span><span class="token operator">-</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">.</span>T<span class="token punctuation">.</span>tolist<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token operator">==</span><span class="token number">1</span><span class="token punctuation">:</span>
+            <span class="token keyword">return</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">,</span>self<span class="token punctuation">.</span>Leaf<span class="token punctuation">(</span>data<span class="token punctuation">)</span>
+        pobj<span class="token operator">=</span>self<span class="token punctuation">.</span>Obj<span class="token punctuation">(</span>data<span class="token punctuation">)</span>
+        maxscore<span class="token operator">=</span><span class="token operator">-</span><span class="token number">1</span>
+        maxnum<span class="token operator">=</span><span class="token number">0</span>
+        maxval<span class="token operator">=</span><span class="token number">0</span>
+        n<span class="token punctuation">,</span>m<span class="token operator">=</span>data<span class="token punctuation">.</span>shape
+        <span class="token keyword">for</span> i <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span>m<span class="token operator">-</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+            n<span class="token operator">=</span>data<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">,</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span>T<span class="token punctuation">.</span>tolist<span class="token punctuation">(</span><span class="token punctuation">)</span>
+            <span class="token keyword">for</span> j <span class="token keyword">in</span> <span class="token builtin">set</span><span class="token punctuation">(</span>n<span class="token punctuation">)</span><span class="token punctuation">:</span>
+                lchild<span class="token punctuation">,</span>rchild<span class="token operator">=</span>self<span class="token punctuation">.</span>split<span class="token punctuation">(</span>data<span class="token punctuation">,</span>i<span class="token punctuation">,</span>j<span class="token punctuation">)</span>
+                <span class="token keyword">if</span> <span class="token builtin">len</span><span class="token punctuation">(</span>lchild<span class="token punctuation">)</span><span class="token operator">==</span><span class="token number">0</span> <span class="token keyword">or</span> <span class="token builtin">len</span><span class="token punctuation">(</span>rchild<span class="token punctuation">)</span><span class="token operator">==</span><span class="token number">0</span><span class="token punctuation">:</span>
+                    <span class="token keyword">continue</span>
+                score<span class="token operator">=</span><span class="token operator">-</span>self<span class="token punctuation">.</span>Obj<span class="token punctuation">(</span>lchild<span class="token punctuation">)</span><span class="token operator">+</span>self<span class="token punctuation">.</span>Obj<span class="token punctuation">(</span>rchild<span class="token punctuation">)</span><span class="token operator">+</span>pobj
+                <span class="token keyword">if</span> score<span class="token operator">&gt;</span>maxscore<span class="token punctuation">:</span>
+                    maxscore<span class="token operator">=</span>score
+                    maxnum<span class="token operator">=</span>i
+                    maxval<span class="token operator">=</span>j
+        <span class="token keyword">if</span> maxscore<span class="token operator">&lt;=</span>self<span class="token punctuation">.</span>minscore<span class="token punctuation">:</span>
+            <span class="token keyword">return</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">,</span>self<span class="token punctuation">.</span>Leaf<span class="token punctuation">(</span>data<span class="token punctuation">)</span>
+        <span class="token keyword">return</span> maxnum<span class="token punctuation">,</span>maxval
+
+    <span class="token keyword">def</span> <span class="token function">CreateTree</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span>data<span class="token punctuation">,</span>depth<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        num<span class="token punctuation">,</span>val<span class="token operator">=</span>self<span class="token punctuation">.</span>ChooseSplit<span class="token punctuation">(</span>data<span class="token punctuation">,</span>depth<span class="token punctuation">)</span>
+        <span class="token keyword">if</span> num<span class="token operator">==</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">:</span>
+            <span class="token keyword">return</span> val
+        lchild<span class="token punctuation">,</span>rchild<span class="token operator">=</span>self<span class="token punctuation">.</span>split<span class="token punctuation">(</span>data<span class="token punctuation">,</span>num<span class="token punctuation">,</span>val<span class="token punctuation">)</span>
+        Tree<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">}</span>
+        <span class="token triple-quoted-string string">"""
+        如果不是叶节点，则以字典形式建树，否则节点只存储叶子的值
+        """</span>
+        Tree<span class="token punctuation">[</span><span class="token string">'num'</span><span class="token punctuation">]</span><span class="token operator">=</span>num
+        Tree<span class="token punctuation">[</span><span class="token string">'val'</span><span class="token punctuation">]</span><span class="token operator">=</span>val
+        Tree<span class="token punctuation">[</span><span class="token string">'lchild'</span><span class="token punctuation">]</span><span class="token operator">=</span>self<span class="token punctuation">.</span>CreateTree<span class="token punctuation">(</span>lchild<span class="token punctuation">,</span>depth<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">)</span>
+        Tree<span class="token punctuation">[</span><span class="token string">'rchild'</span><span class="token punctuation">]</span><span class="token operator">=</span>self<span class="token punctuation">.</span>CreateTree<span class="token punctuation">(</span>rchild<span class="token punctuation">,</span>depth<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">)</span>
+        <span class="token keyword">return</span> Tree<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>其中，决策树的非叶子节点有属性：</p>
+<ul>
+<li>num，val：在该结点处选取第num个属性值进行划分，最佳划分点为val</li>
+<li>lchild，rchild：分别指向第num个属性小于等于val和大于val的子树</li>
+</ul>
+<p>对于单棵决策树的停止策略：</p>
+<ul>
+<li>maxdepth：每次划分记录树的高度，深度为maxdepth时直接当作叶子节点</li>
+<li>minindex：每次划分时，如果当前节点的样本数小于minindex，则直接作为叶子节点</li>
+<li>minscore：若每次划分的最佳划分的得分小于等于minscore时，直接作为叶子节点</li>
+</ul>
+<p>优化ChooseSpilt函数。为了减少每次对得分Obj的计算时存在的重复计算，将函数的核心部分做以下修改：（将数据按照当前属性进行排序，每次选取的属性值依次增大，因此左右两孩子的g，h线性增/减，对于左孩子：$\Delta g=\sum _{data[j,i]=val}(data1[j,-1]-data1[j,-2])<em>2.0$,$\Delta h=2</em>\sum_{data[j,i]=val}$）</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">gl<span class="token operator">=</span><span class="token number">0</span>
+hl<span class="token operator">=</span><span class="token number">0</span>
+gr<span class="token operator">=</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token operator">*</span>np<span class="token punctuation">.</span><span class="token builtin">sum</span><span class="token punctuation">(</span>data<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">,</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token operator">-</span>data<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">,</span><span class="token operator">-</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+hr<span class="token operator">=</span><span class="token number">2</span><span class="token operator">*</span>n
+data1<span class="token operator">=</span>data<span class="token punctuation">[</span>data<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">,</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span>argsort<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
+<span class="token keyword">for</span> j <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span>n<span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    gl<span class="token operator">+=</span><span class="token punctuation">(</span>data1<span class="token punctuation">[</span>j<span class="token punctuation">,</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token operator">-</span>data1<span class="token punctuation">[</span>j<span class="token punctuation">,</span><span class="token operator">-</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token operator">*</span><span class="token number">2.0</span>
+    gr<span class="token operator">-=</span><span class="token punctuation">(</span>data1<span class="token punctuation">[</span>j<span class="token punctuation">,</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token operator">-</span>data1<span class="token punctuation">[</span>j<span class="token punctuation">,</span><span class="token operator">-</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token operator">*</span><span class="token number">2.0</span>
+    hl<span class="token operator">+=</span><span class="token number">2</span>
+    hr<span class="token operator">-=</span><span class="token number">2</span>
+    <span class="token keyword">if</span> data1<span class="token punctuation">[</span>j<span class="token punctuation">,</span>i<span class="token punctuation">]</span><span class="token operator">==</span>data1<span class="token punctuation">[</span>j<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">,</span>i<span class="token punctuation">]</span><span class="token punctuation">:</span> 
+        <span class="token keyword">continue</span>
+    obj1<span class="token operator">=</span><span class="token operator">-</span>gl<span class="token operator">**</span><span class="token number">2</span><span class="token operator">*</span><span class="token number">0.5</span><span class="token operator">/</span><span class="token punctuation">(</span>hl<span class="token operator">+</span>self<span class="token punctuation">.</span>lam<span class="token punctuation">)</span><span class="token operator">+</span>self<span class="token punctuation">.</span>gamma
+    obj2<span class="token operator">=</span><span class="token operator">-</span>gr<span class="token operator">**</span><span class="token number">2</span><span class="token operator">*</span><span class="token number">0.5</span><span class="token operator">/</span><span class="token punctuation">(</span>hr<span class="token operator">+</span>self<span class="token punctuation">.</span>lam<span class="token punctuation">)</span><span class="token operator">+</span>self<span class="token punctuation">.</span>gamma
+    score<span class="token operator">=</span>pobj<span class="token operator">-</span>obj1<span class="token operator">-</span>obj2
+    <span class="token keyword">if</span> score<span class="token operator">&gt;</span>maxscore<span class="token punctuation">:</span>
+        maxscore<span class="token operator">=</span>score
+        maxnum<span class="token operator">=</span>i
+        maxval<span class="token operator">=</span>data1<span class="token punctuation">[</span>j<span class="token punctuation">,</span>i<span class="token punctuation">]</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h4 id="XGBoost模型"><a href="#XGBoost模型" class="headerlink" title="XGBoost模型"></a>XGBoost模型</h4><p>超参数：treenum=30</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">class</span> <span class="token class-name">XGBoost</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span>data<span class="token punctuation">,</span>treenum<span class="token operator">=</span><span class="token number">30</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+    <span class="token keyword">def</span> <span class="token function">isTree</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span>tree<span class="token punctuation">)</span><span class="token punctuation">:</span><span class="token comment">#判断节点的类型，非叶子节点为字典类型，叶子节点为float类型</span>
+        <span class="token keyword">return</span> <span class="token builtin">type</span><span class="token punctuation">(</span>tree<span class="token punctuation">)</span><span class="token punctuation">.</span>__name__<span class="token operator">==</span><span class="token string">'dict'</span>
+        
+    <span class="token keyword">def</span> <span class="token function">find</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span>data<span class="token punctuation">,</span>i<span class="token punctuation">,</span>tree<span class="token punctuation">)</span><span class="token punctuation">:</span><span class="token comment">#对于单个样本，找到所在决策树的位置</span>
+        <span class="token keyword">if</span> self<span class="token punctuation">.</span>isTree<span class="token punctuation">(</span>tree<span class="token punctuation">)</span><span class="token punctuation">:</span>
+            <span class="token keyword">if</span> data<span class="token punctuation">[</span>i<span class="token punctuation">,</span>tree<span class="token punctuation">[</span><span class="token string">"num"</span><span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token operator">&lt;=</span>tree<span class="token punctuation">[</span><span class="token string">'val'</span><span class="token punctuation">]</span><span class="token punctuation">:</span>
+                <span class="token keyword">return</span> self<span class="token punctuation">.</span>find<span class="token punctuation">(</span>data<span class="token punctuation">,</span>i<span class="token punctuation">,</span>tree<span class="token punctuation">[</span><span class="token string">'lchild'</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+            <span class="token keyword">else</span><span class="token punctuation">:</span>
+                <span class="token keyword">return</span> self<span class="token punctuation">.</span>find<span class="token punctuation">(</span>data<span class="token punctuation">,</span>i<span class="token punctuation">,</span>tree<span class="token punctuation">[</span><span class="token string">'rchild'</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+        <span class="token keyword">else</span><span class="token punctuation">:</span>
+            <span class="token keyword">return</span> tree
+    
+    <span class="token keyword">def</span> <span class="token function">fit</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token triple-quoted-string string">"""
+        训练函数，其中共训练了treenum棵树，调用RegressionTree，并计算损失和相关系数
+        """</span>
+        loss<span class="token operator">=</span><span class="token punctuation">[</span><span class="token punctuation">]</span>
+        r2<span class="token operator">=</span><span class="token punctuation">[</span><span class="token punctuation">]</span>
+        va<span class="token operator">=</span><span class="token punctuation">(</span>np<span class="token punctuation">.</span>var<span class="token punctuation">(</span>self<span class="token punctuation">.</span>data<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">,</span><span class="token operator">-</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token keyword">for</span> i <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span>self<span class="token punctuation">.</span>treenum<span class="token punctuation">)</span><span class="token punctuation">:</span>
+            <span class="token keyword">print</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span>
+            tree<span class="token operator">=</span>Rtree<span class="token punctuation">.</span>CreateTree<span class="token punctuation">(</span>self<span class="token punctuation">.</span>data<span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">)</span>
+            <span class="token keyword">for</span> j <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span>self<span class="token punctuation">.</span>length<span class="token punctuation">)</span><span class="token punctuation">:</span>
+                self<span class="token punctuation">.</span>data<span class="token punctuation">[</span>j<span class="token punctuation">,</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token operator">+=</span>self<span class="token punctuation">.</span>find<span class="token punctuation">(</span>self<span class="token punctuation">.</span>data<span class="token punctuation">,</span>j<span class="token punctuation">,</span>tree<span class="token punctuation">)</span>
+            r<span class="token operator">=</span>np<span class="token punctuation">.</span>sqrt<span class="token punctuation">(</span>np<span class="token punctuation">.</span><span class="token builtin">sum</span><span class="token punctuation">(</span><span class="token punctuation">(</span>self<span class="token punctuation">.</span>data<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">,</span><span class="token operator">-</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token operator">-</span>self<span class="token punctuation">.</span>data<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">,</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token operator">**</span><span class="token number">2</span><span class="token operator">/</span>self<span class="token punctuation">.</span>length<span class="token punctuation">)</span><span class="token punctuation">)</span>
+            r2<span class="token punctuation">.</span>append<span class="token punctuation">(</span><span class="token number">1</span><span class="token operator">-</span>r<span class="token operator">**</span><span class="token number">2</span><span class="token operator">/</span>va<span class="token punctuation">)</span>
+            lo<span class="token operator">=</span>np<span class="token punctuation">.</span><span class="token builtin">sum</span><span class="token punctuation">(</span><span class="token punctuation">(</span>self<span class="token punctuation">.</span>data<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">,</span><span class="token operator">-</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token operator">-</span>self<span class="token punctuation">.</span>data<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">,</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token operator">**</span><span class="token number">2</span><span class="token punctuation">)</span>
+            loss<span class="token punctuation">.</span>append<span class="token punctuation">(</span>lo<span class="token punctuation">)</span>
+            self<span class="token punctuation">.</span>forest<span class="token punctuation">.</span>append<span class="token punctuation">(</span>tree<span class="token punctuation">)</span>
+        <span class="token keyword">return</span> loss<span class="token punctuation">,</span>r2
+        
+    <span class="token keyword">def</span> <span class="token function">predict</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span>data<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        m<span class="token punctuation">,</span>n<span class="token operator">=</span>data<span class="token punctuation">.</span>shape
+        <span class="token keyword">for</span> i <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span>self<span class="token punctuation">.</span>treenum<span class="token punctuation">)</span><span class="token punctuation">:</span>
+            <span class="token keyword">for</span> j <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span>m<span class="token punctuation">)</span><span class="token punctuation">:</span>
+                test_data<span class="token punctuation">[</span>j<span class="token punctuation">,</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token operator">+=</span>self<span class="token punctuation">.</span>find<span class="token punctuation">(</span>data<span class="token punctuation">,</span>j<span class="token punctuation">,</span>self<span class="token punctuation">.</span>forest<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h4 id="训练模型并实现损失函数可视化"><a href="#训练模型并实现损失函数可视化" class="headerlink" title="训练模型并实现损失函数可视化"></a>训练模型并实现损失函数可视化</h4><pre class="line-numbers language-python" data-language="python"><code class="language-python">Rtree<span class="token operator">=</span>RegressionTree<span class="token punctuation">(</span><span class="token punctuation">)</span>
+boost<span class="token operator">=</span>XGBoost<span class="token punctuation">(</span>train_data<span class="token punctuation">)</span>
+loss<span class="token punctuation">,</span>r2<span class="token operator">=</span>boost<span class="token punctuation">.</span>fit<span class="token punctuation">(</span><span class="token punctuation">)</span>
+boost<span class="token punctuation">.</span>predict<span class="token punctuation">(</span>test_data<span class="token punctuation">)</span>
+x <span class="token operator">=</span> np<span class="token punctuation">.</span>arange<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token builtin">len</span><span class="token punctuation">(</span>loss<span class="token punctuation">)</span><span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">)</span>
+plt<span class="token punctuation">.</span>plot<span class="token punctuation">(</span>x<span class="token punctuation">,</span>loss<span class="token punctuation">)</span>
+plt<span class="token punctuation">.</span>xlabel<span class="token punctuation">(</span><span class="token string">u"times"</span><span class="token punctuation">)</span>
+plt<span class="token punctuation">.</span>ylabel<span class="token punctuation">(</span><span class="token string">u"loss-value"</span><span class="token punctuation">)</span>
+plt<span class="token punctuation">.</span>show<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h4 id="模型预测并评估结果"><a href="#模型预测并评估结果" class="headerlink" title="模型预测并评估结果"></a>模型预测并评估结果</h4><p>结果评估指标：</p>
+<ul>
+<li>$RMSE=\sqrt{\frac1n\sum_{i=1}^n{(y-\hat y)^2}}$</li>
+<li>$R2=1-\frac{RMSE}{var(y)}$</li>
+<li>误差分布直方图</li>
+</ul>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">r<span class="token operator">=</span>np<span class="token punctuation">.</span>sqrt<span class="token punctuation">(</span>np<span class="token punctuation">.</span><span class="token builtin">sum</span><span class="token punctuation">(</span><span class="token punctuation">(</span>test_data<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">,</span><span class="token operator">-</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token operator">-</span>test_data<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">,</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token operator">**</span><span class="token number">2</span><span class="token operator">/</span>test_data<span class="token punctuation">.</span>shape<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+r2<span class="token operator">=</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token operator">-</span>r<span class="token operator">**</span><span class="token number">2</span><span class="token operator">/</span>np<span class="token punctuation">.</span>var<span class="token punctuation">(</span>test_data<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">,</span><span class="token operator">-</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+res<span class="token operator">=</span>test_data<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">,</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token operator">-</span>test_data<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">,</span><span class="token operator">-</span><span class="token number">2</span><span class="token punctuation">]</span>
+res<span class="token operator">=</span>np<span class="token punctuation">.</span>sort<span class="token punctuation">(</span>res<span class="token punctuation">)</span>
+plt<span class="token punctuation">.</span>hist<span class="token punctuation">(</span>res<span class="token punctuation">,</span> bins<span class="token operator">=</span><span class="token number">30</span><span class="token punctuation">,</span> rwidth<span class="token operator">=</span><span class="token number">0.9</span><span class="token punctuation">,</span> density<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span>
+plt<span class="token punctuation">.</span>xlabel<span class="token punctuation">(</span><span class="token string">u"data"</span><span class="token punctuation">)</span>
+plt<span class="token punctuation">.</span>ylabel<span class="token punctuation">(</span><span class="token string">u"num"</span><span class="token punctuation">)</span>
+plt<span class="token punctuation">.</span>show<span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>test_data<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">,</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token operator">-</span>test_data<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">,</span><span class="token operator">-</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>r<span class="token punctuation">,</span>r2<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="实验结果与分析"><a href="#实验结果与分析" class="headerlink" title="实验结果与分析"></a>实验结果与分析</h3><p>（调参过程略）</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">SN1987A</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://sn1987a-1.github.io/posts/f54e13d4.html">http://sn1987a-1.github.io/posts/f54e13d4.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://sn1987a-1.github.io" target="_blank">SN1987A</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E4%B8%93%E4%B8%9A%E8%AF%BE/">专业课</a></div><div class="post_share"><div class="social-share" data-image="https://user-images.githubusercontent.com/74918703/155833614-94542aa5-0d30-4691-95d6-9d35a95eaa6a.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/posts/7ab554ae.html"><img class="next-cover" src= "data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs=" data-lazy-src="https://user-images.githubusercontent.com/74918703/155833614-94542aa5-0d30-4691-95d6-9d35a95eaa6a.png" onerror="onerror=null;src='https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/img/friend_404.gif'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">ML算法：SVM</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span> 相关推荐</span></div><div class="relatedPosts-list"><div><a href="/posts/94cbcba9.html" title="代数结构习题课-1"><img class="cover" src= "data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs=" data-lazy-src="https://user-images.githubusercontent.com/74918703/155833614-94542aa5-0d30-4691-95d6-9d35a95eaa6a.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-05-02</div><div class="title">代数结构习题课-1</div></div></a></div><div><a href="/posts/1120.html" title="HUFFMAM Tree"><img class="cover" src= "data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs=" data-lazy-src="https://user-images.githubusercontent.com/74918703/155833614-94542aa5-0d30-4691-95d6-9d35a95eaa6a.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2021-11-11</div><div class="title">HUFFMAM Tree</div></div></a></div><div><a href="/posts/131000.html" title="DataStruct基础知识"><img class="cover" src= "data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs=" data-lazy-src="https://user-images.githubusercontent.com/74918703/155833471-10c2dd15-9579-4516-a86b-539be619066d.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-01-11</div><div class="title">DataStruct基础知识</div></div></a></div><div><a href="/posts/e95a583.html" title="AI algorithms"><img class="cover" src= "data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs=" data-lazy-src="https://user-images.githubusercontent.com/74918703/155833614-94542aa5-0d30-4691-95d6-9d35a95eaa6a.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-06-30</div><div class="title">AI algorithms</div></div></a></div><div><a href="/posts/58da92e9.html" title="Astar&CSP"><img class="cover" src= "data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs=" data-lazy-src="https://user-images.githubusercontent.com/74918703/155833614-94542aa5-0d30-4691-95d6-9d35a95eaa6a.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-06-01</div><div class="title">Astar&CSP</div></div></a></div><div><a href="/posts/26753.html" title="ChatBot"><img class="cover" src= "data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs=" data-lazy-src="https://user-images.githubusercontent.com/74918703/155833614-94542aa5-0d30-4691-95d6-9d35a95eaa6a.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-04-26</div><div class="title">ChatBot</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs=" data-lazy-src="https://user-images.githubusercontent.com/74918703/157878087-7f268ec6-e86a-4e5f-be80-4846ee8d644c.png" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">SN1987A</div><div class="author-info__description">Learn not and know not.</div></div><div class="card-info-data"><div class="card-info-data-item is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">32</div></a></div><div class="card-info-data-item is-center"><a href="/tags/"><div class="headline">标签</div><div class="length-num">10</div></a></div><div class="card-info-data-item is-center"><a href="/categories/"><div class="headline">分类</div><div class="length-num">17</div></a></div></div><a class="button--animated" id="card-info-btn" target="_blank" rel="noopener" href="http://home.ustc.edu.cn/~lay_sn1987a/"><i class="fab fa-home"></i><span>个人主页</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/sn1987a-1/" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="tencent://AddContact/?fromId=45&amp;fromSubId=1&amp;subcmd=all&amp;uin=945093063&amp;website=www.qtxml.cn" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn card-announcement-animation"></i><span>公告</span></div><div class="announcement_content">我希望正在读这句话的人永远开心 contract me----mail lay_sn1987a@mail.ustc.edu.cn</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#XGBoost"><span class="toc-number">1.</span> <span class="toc-text">XGBoost</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E7%9B%AE%E7%9A%84"><span class="toc-number">1.1.</span> <span class="toc-text">实验目的</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E5%8E%9F%E7%90%86"><span class="toc-number">1.2.</span> <span class="toc-text">实验原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E6%AD%A5%E9%AA%A4"><span class="toc-number">1.3.</span> <span class="toc-text">实验步骤</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AF%BB%E5%8F%96%E6%95%B0%E6%8D%AE%E5%92%8C%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86"><span class="toc-number">1.3.1.</span> <span class="toc-text">读取数据和数据处理</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9B%9E%E5%BD%92%E6%A0%91%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.3.2.</span> <span class="toc-text">回归树模型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#XGBoost%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.3.3.</span> <span class="toc-text">XGBoost模型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B%E5%B9%B6%E5%AE%9E%E7%8E%B0%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E5%8F%AF%E8%A7%86%E5%8C%96"><span class="toc-number">1.3.4.</span> <span class="toc-text">训练模型并实现损失函数可视化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A8%A1%E5%9E%8B%E9%A2%84%E6%B5%8B%E5%B9%B6%E8%AF%84%E4%BC%B0%E7%BB%93%E6%9E%9C"><span class="toc-number">1.3.5.</span> <span class="toc-text">模型预测并评估结果</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E7%BB%93%E6%9E%9C%E4%B8%8E%E5%88%86%E6%9E%90"><span class="toc-number">1.4.</span> <span class="toc-text">实验结果与分析</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/f54e13d4.html" title="ML算法：XGBoost"><img src= "data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs=" data-lazy-src="https://user-images.githubusercontent.com/74918703/155833614-94542aa5-0d30-4691-95d6-9d35a95eaa6a.png" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/img/friend_404.gif'" alt="ML算法：XGBoost"/></a><div class="content"><a class="title" href="/posts/f54e13d4.html" title="ML算法：XGBoost">ML算法：XGBoost</a><time datetime="2023-11-28T12:48:34.000Z" title="发表于 2023-11-28 20:48:34">2023-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/7ab554ae.html" title="ML算法：SVM"><img src= "data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs=" data-lazy-src="https://user-images.githubusercontent.com/74918703/155833614-94542aa5-0d30-4691-95d6-9d35a95eaa6a.png" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/img/friend_404.gif'" alt="ML算法：SVM"/></a><div class="content"><a class="title" href="/posts/7ab554ae.html" title="ML算法：SVM">ML算法：SVM</a><time datetime="2023-11-10T12:48:34.000Z" title="发表于 2023-11-10 20:48:34">2023-11-10</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/615503d3.html" title="编译原理-LLVM IR语法"><img src= "data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs=" data-lazy-src="https://user-images.githubusercontent.com/74918703/155833614-94542aa5-0d30-4691-95d6-9d35a95eaa6a.png" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/img/friend_404.gif'" alt="编译原理-LLVM IR语法"/></a><div class="content"><a class="title" href="/posts/615503d3.html" title="编译原理-LLVM IR语法">编译原理-LLVM IR语法</a><time datetime="2023-10-17T12:48:34.000Z" title="发表于 2023-10-17 20:48:34">2023-10-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/b38fcafd.html" title="LLVM IR语法"><img src= "data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs=" data-lazy-src="https://user-images.githubusercontent.com/74918703/155833614-94542aa5-0d30-4691-95d6-9d35a95eaa6a.png" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/img/friend_404.gif'" alt="LLVM IR语法"/></a><div class="content"><a class="title" href="/posts/b38fcafd.html" title="LLVM IR语法">LLVM IR语法</a><time datetime="2023-10-17T12:48:34.000Z" title="发表于 2023-10-17 20:48:34">2023-10-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/f1383170.html" title="ML算法：逻辑回归"><img src= "data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs=" data-lazy-src="https://user-images.githubusercontent.com/74918703/155833614-94542aa5-0d30-4691-95d6-9d35a95eaa6a.png" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/img/friend_404.gif'" alt="ML算法：逻辑回归"/></a><div class="content"><a class="title" href="/posts/f1383170.html" title="ML算法：逻辑回归">ML算法：逻辑回归</a><time datetime="2023-10-17T12:48:34.000Z" title="发表于 2023-10-17 20:48:34">2023-10-17</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2021 - 2023  <i id="heartbeat" class="fa fas fa-heartbeat"></i> SN1987A</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div><script type="text/javascript" id="maid-script" src="https://unpkg.com/mermaid@undefined/dist/mermaid.min.js?v=undefined"></script><script>if (window.mermaid) {
+  var options = JSON.parse(document.getElementById('maid-script').getAttribute('mermaidoptioins'));
+  mermaid.initialize(options);
+}
+</script><head><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/HCLonely/images@master/others/heartbeat.min.css"></head></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><div class="search-dialog__title" id="local-search-title">本地搜索</div><div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div><hr/><div id="local-search-results"></div><span class="search-close-button"><i class="fas fa-times"></i></span></div><div id="search-mask"></div></div><div><script src="https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/js/utils.js"></script><script src="https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/js/main.js"></script><script src="https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/js/search/local-search.js"></script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',preloader.endLoading())</script><div class="js-pjax"><script>if (!window.MathJax) {
+  window.MathJax = {
+    tex: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"]],
+      tags: 'ams'
+    },
+    chtml: {
+      scale: 1.2
+    },
+    options: {
+      renderActions: {
+        findScript: [10, doc => {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/)
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+            const text = document.createTextNode('')
+            node.parentNode.replaceChild(text, node)
+            math.start = {node: text, delim: '', n: 0}
+            math.end = {node: text, delim: '', n: 0}
+            doc.math.push(math)
+          }
+        }, ''],
+        insertScript: [200, () => {
+          document.querySelectorAll('mjx-container:not\([display]\)').forEach(node => {
+            const target = node.parentNode
+            if (target.nodeName.toLowerCase() === 'li') {
+              target.parentNode.classList.add('has-jax')
+            } else {
+              target.classList.add('has-jax')
+            }
+          });
+        }, '', false]
+      }
+    }
+  }
+  
+  const script = document.createElement('script')
+  script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js'
+  script.id = 'MathJax-script'
+  script.async = true
+  document.head.appendChild(script)
+} else {
+  MathJax.startup.document.state(0)
+  MathJax.texReset()
+  MathJax.typeset()
+}</script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css"><script src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.css"><script>(() => {
+  document.querySelectorAll('#article-container span.katex-display').forEach(item => {
+    btf.wrap(item, 'div', { class: 'katex-wrap'})
+  })
+})()</script><script>if (document.getElementsByClassName('mermaid').length) {
+  if (window.mermaidJsLoad) mermaid.init()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js').then(() => {
+      window.mermaidJsLoad = true
+      mermaid.initialize({
+        theme: 'default',
+      })
+      true && mermaid.init()
+    })
+  }
+}</script><script>function loadValine () {
+  function initValine () {
+    const valine = new Valine(Object.assign({
+      el: '#vcomment',
+      appId: '',
+      appKey: '',
+      placeholder: 'haven't done！',
+      avatar: 'monsterid',
+      meta: 'nick,mail,link'.split(','),
+      pageSize: '10',
+      lang: 'zh-CN',
+      recordIP: false,
+      serverURLs: '',
+      emojiCDN: '',
+      emojiMaps: "",
+      enableQQ: false,
+      path: window.location.pathname,
+      requiredFields: ["nick,mail"],
+      visitor: false
+    }, null))
+  }
+
+  if (typeof Valine === 'function') initValine() 
+  else getScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js').then(initValine)
+}
+
+if ('Valine' === 'Valine' || !true) {
+  if (true) btf.loadComment(document.getElementById('vcomment'),loadValine)
+  else setTimeout(loadValine, 0)
+} else {
+  function loadOtherComment () {
+    loadValine()
+  }
+}</script></div><script defer id="dsq-count-scr" src="//xianqi.disqus.com/count.js" async></script><script defer type="text/javascript" src="https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/js/sakura.js"></script><script defer type="text/javascript" src="https://cdn.jsdelivr.net/gh/zhaoze-jpg/Xianqi@main/js/animate.js"></script><div class="aplayer no-destroy" data-id="1776127550" data-server="tencent" data-type="playlist" data-fixed="true" data-mini="true" data-listFolded="false" data-order="random" data-preload="auto" data-autoplay="true" muted></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/fireworks.min.js"></script><script defer="defer" id="fluttering_ribbon" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/canvas-fluttering-ribbon.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = false;
+POWERMODE.mobile = false;
+document.body.addEventListener('input', POWERMODE);
+</script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>let pjaxSelectors = [
+  'title',
+  '#config-diff',
+  '#body-wrap',
+  '#rightside-config-hide',
+  '#rightside-config-show',
+  '.js-pjax'
+]
+
+if (false) {
+  pjaxSelectors.unshift('meta[property="og:image"]', 'meta[property="og:title"]', 'meta[property="og:url"]')
+}
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+
+  // removeEventListener scroll 
+  window.removeEventListener('scroll', window.tocScrollFn)
+  window.removeEventListener('scroll', scrollCollect)
+
+  typeof preloader === 'object' && preloader.initLoading()
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof chatBtnFn === 'function' && chatBtnFn()
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // Analytics
+  if (false) {
+    MtaH5.pgv()
+  }
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+
+  typeof preloader === 'object' && preloader.endLoading()
+})
+
+document.addEventListener('pjax:error', (e) => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/404.html')
+  }
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"left","width":150,"height":300},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
